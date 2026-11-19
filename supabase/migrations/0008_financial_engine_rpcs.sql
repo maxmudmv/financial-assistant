@@ -38,6 +38,7 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
 AS $$
+#variable_conflict use_column
 DECLARE
   v_existing_tx RECORD;
   v_account RECORD;
@@ -223,6 +224,7 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
 AS $$
+#variable_conflict use_column
 DECLARE
   v_tx RECORD;
   v_last_entry RECORD;
@@ -272,10 +274,10 @@ BEGIN
 
   -- Fetch latest non-reversal ledger entry for this transaction
   SELECT * INTO v_last_entry
-  FROM public.ledger_entries
-  WHERE transaction_id = v_tx.id
-    AND is_reversal = false
-  ORDER BY created_at DESC
+  FROM public.ledger_entries le
+  WHERE le.transaction_id = v_tx.id
+    AND le.is_reversal = false
+  ORDER BY le.created_at DESC
   LIMIT 1;
 
   v_financial_changed :=
@@ -432,6 +434,7 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
 AS $$
+#variable_conflict use_column
 DECLARE
   v_tx RECORD;
   v_last_entry RECORD;
@@ -464,10 +467,10 @@ BEGIN
   FOR UPDATE;
 
   SELECT * INTO v_last_entry
-  FROM public.ledger_entries
-  WHERE transaction_id = v_tx.id
-    AND is_reversal = false
-  ORDER BY created_at DESC
+  FROM public.ledger_entries le
+  WHERE le.transaction_id = v_tx.id
+    AND le.is_reversal = false
+  ORDER BY le.created_at DESC
   LIMIT 1;
 
   IF v_last_entry.id IS NULL THEN
@@ -548,6 +551,7 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
 AS $$
+#variable_conflict use_column
 DECLARE
   v_existing RECORD;
   v_from_acc RECORD;
@@ -728,6 +732,7 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
 AS $$
+#variable_conflict use_column
 DECLARE
   v_tr RECORD;
   v_from_acc RECORD;

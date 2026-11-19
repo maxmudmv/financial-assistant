@@ -4,6 +4,7 @@ import { cn } from '@/lib/cn';
 interface GlassCardProps extends HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
   padding?: 'none' | 'sm' | 'md' | 'lg';
+  interactive?: boolean;
 }
 
 const PADDING_MAP = {
@@ -17,12 +18,14 @@ export function GlassCard({
   children,
   className,
   padding = 'md',
+  interactive = false,
   ...props
 }: GlassCardProps) {
   return (
     <div
       className={cn(
-        'liquid-glass rounded-glass overflow-hidden',
+        'liquid-glass overflow-hidden rounded-[26px]',
+        interactive && 'cursor-pointer hover:-translate-y-0.5 active:scale-[0.985]',
         PADDING_MAP[padding],
         className,
       )}

@@ -16,6 +16,7 @@ export const ru: TranslationDictionary = {
     transfers: 'Переводы',
     ledger: 'Леджер',
     settings: 'Настройки',
+    more: 'Меню',
   },
   common: {
     loading: 'Загрузка...',

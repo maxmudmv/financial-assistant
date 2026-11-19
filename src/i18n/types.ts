@@ -18,6 +18,7 @@ export interface TranslationDictionary {
     transfers: string;
     ledger: string;
     settings: string;
+    more: string;
   };
   common: {
     loading: string;

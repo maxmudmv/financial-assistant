@@ -16,6 +16,7 @@ export const en: TranslationDictionary = {
     transfers: 'Transfers',
     ledger: 'Ledger',
     settings: 'Settings',
+    more: 'Menu',
   },
   common: {
     loading: 'Loading...',

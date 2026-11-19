@@ -69,7 +69,7 @@ export function initTelegramWebApp(): TelegramWebApp | null {
 export function syncTelegramChromeColors(resolvedTheme: 'dark' | 'light'): void {
   const webApp = getTelegramWebApp();
   if (!webApp) return;
-  const color = resolvedTheme === 'dark' ? '#05070E' : '#F5F7FC';
+  const color = resolvedTheme === 'dark' ? '#060B16' : '#DCE7F3';
   try {
     webApp.setHeaderColor?.(color);
     webApp.setBackgroundColor?.(color);
@@ -78,11 +78,15 @@ export function syncTelegramChromeColors(resolvedTheme: 'dark' | 'light'): void 
   }
 }
 
-export function triggerHaptic(type: 'light' | 'medium' | 'success' | 'error' = 'light'): void {
+export function triggerHaptic(
+  type: 'light' | 'medium' | 'success' | 'error' | 'selection' = 'light',
+): void {
   const haptic = getTelegramWebApp()?.HapticFeedback;
   if (!haptic) return;
   try {
-    if (type === 'success' || type === 'error') {
+    if (type === 'selection') {
+      haptic.selectionChanged();
+    } else if (type === 'success' || type === 'error') {
       haptic.notificationOccurred(type);
     } else {
       haptic.impactOccurred(type);

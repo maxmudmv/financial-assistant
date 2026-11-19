@@ -16,6 +16,7 @@ export const uz: TranslationDictionary = {
     transfers: 'O‘tkazmalar',
     ledger: 'Ledger',
     settings: 'Sozlamalar',
+    more: 'Menyu',
   },
   common: {
     loading: 'Yuklanmoqda...',

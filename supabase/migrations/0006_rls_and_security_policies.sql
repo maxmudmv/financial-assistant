@@ -416,3 +416,17 @@ CREATE POLICY idempotency_keys_self_all ON public.idempotency_keys
 
 -- Note: rate_limit_buckets intentionally has zero user policies; only SECURITY DEFINER
 -- check_rate_limit() or the server-side service role can access it.
+
+-- Ensure Supabase's backend-only `service_role` has explicit privileges on all schema objects
+-- (required on newer Supabase projects where default table grants are restricted).
+-- `anon` intentionally receives NO table grants because FINORA serves all data via Vercel API.
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'service_role') THEN
+    EXECUTE 'GRANT USAGE ON SCHEMA public TO service_role';
+    EXECUTE 'GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO service_role';
+    EXECUTE 'GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO service_role';
+    EXECUTE 'GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO service_role';
+  END IF;
+END
+$$;
