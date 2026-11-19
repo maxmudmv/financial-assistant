@@ -1,6 +1,6 @@
 import Decimal from 'decimal.js';
-import { convertMoney, formatMoneyFixed4, parseMoney } from './money';
-import { resolveRateFromRows, type ExchangeRateRow } from './exchangeRates';
+import { convertMoney, formatMoneyFixed4, parseMoney } from './money.js';
+import { resolveRateFromRows, type ExchangeRateRow } from './exchangeRates.js';
 
 export type AnalyticsPeriod = 'today' | 'week' | 'month' | 'last_month' | 'year' | 'custom';
 

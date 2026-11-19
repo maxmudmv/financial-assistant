@@ -1,6 +1,6 @@
 import Decimal from 'decimal.js';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { formatRateFixed8, normalizeCurrencyCode } from './money';
+import { formatRateFixed8, normalizeCurrencyCode } from './money.js';
 
 export const DEFAULT_RATE_STALE_HOURS = 24;
 export const DEFAULT_FREE_PROVIDER_URL = 'https://open.er-api.com/v6/latest/USD';

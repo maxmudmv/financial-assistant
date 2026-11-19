@@ -1,7 +1,7 @@
 import crypto from 'node:crypto';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { z } from 'zod';
-import { parseJsonBody, sendJson, withApiHandler } from '../../server/http/response';
+import { parseJsonBody, sendJson, withApiHandler } from '../../server/http/response.js';
 import {
   BadRequestError,
   ConflictError,
@@ -9,19 +9,19 @@ import {
   NotFoundError,
   UnauthorizedError,
   ValidationError,
-} from '../../server/security/errors';
-import { recordAuditLog } from '../../server/security/audit';
-import { getClientIp } from '../../server/security/headers';
-import { enforceRateLimit } from '../../server/security/rateLimit';
-import { getServerEnv } from '../../server/config/env';
-import { getSupabaseAdmin } from '../../server/db/supabase';
-import { extractSessionToken, loadSessionContextByToken } from '../../server/auth/session';
+} from '../../server/security/errors.js';
+import { recordAuditLog } from '../../server/security/audit.js';
+import { getClientIp } from '../../server/security/headers.js';
+import { enforceRateLimit } from '../../server/security/rateLimit.js';
+import { getServerEnv } from '../../server/config/env.js';
+import { getSupabaseAdmin } from '../../server/db/supabase.js';
+import { extractSessionToken, loadSessionContextByToken } from '../../server/auth/session.js';
 import {
   ADMIN_ROLES,
   ALL_ROLES,
   authenticateFinanceRequest,
-} from '../../server/finance/access';
-import { normalizeCurrencyCode } from '../../server/finance/money';
+} from '../../server/finance/access.js';
+import { normalizeCurrencyCode } from '../../server/finance/money.js';
 
 const CreateFamilyWorkspaceSchema = z.object({
   name: z.string().trim().min(1).max(80),

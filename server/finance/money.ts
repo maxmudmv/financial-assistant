@@ -1,5 +1,5 @@
 import Decimal from 'decimal.js';
-import { ValidationError } from '../security/errors';
+import { ValidationError } from '../security/errors.js';
 
 // Configure high-precision financial decimal arithmetic (never JS IEEE 754 float)
 Decimal.set({

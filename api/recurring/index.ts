@@ -1,13 +1,13 @@
 import crypto from 'node:crypto';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { z } from 'zod';
-import { parseJsonBody, sendJson, withApiHandler } from '../../server/http/response';
+import { parseJsonBody, sendJson, withApiHandler } from '../../server/http/response.js';
 import {
   BadRequestError,
   NotFoundError,
   ValidationError,
-} from '../../server/security/errors';
-import { getSupabaseAdmin } from '../../server/db/supabase';
+} from '../../server/security/errors.js';
+import { getSupabaseAdmin } from '../../server/db/supabase.js';
 import {
   ALL_ROLES,
   assertAccountAccessible,
@@ -15,9 +15,9 @@ import {
   verifyCronAuthorization,
   WRITE_ROLES,
   type AccountAccessRecord,
-} from '../../server/finance/access';
-import { formatMoneyFixed4, parsePositiveMoney } from '../../server/finance/money';
-import { processDueRecurringRules } from '../../server/finance/recurring';
+} from '../../server/finance/access.js';
+import { formatMoneyFixed4, parsePositiveMoney } from '../../server/finance/money.js';
+import { processDueRecurringRules } from '../../server/finance/recurring.js';
 
 const CreateRecurringSchema = z.object({
   name: z.string().trim().min(1).max(80),

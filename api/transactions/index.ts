@@ -1,13 +1,13 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { z } from 'zod';
-import { parseJsonBody, sendJson, withApiHandler } from '../../server/http/response';
+import { parseJsonBody, sendJson, withApiHandler } from '../../server/http/response.js';
 import {
   BadRequestError,
   ForbiddenError,
   NotFoundError,
   ValidationError,
-} from '../../server/security/errors';
-import { recordAuditLog } from '../../server/security/audit';
+} from '../../server/security/errors.js';
+import { recordAuditLog } from '../../server/security/audit.js';
 import {
   ALL_ROLES,
   assertAccountAccessible,
@@ -18,22 +18,22 @@ import {
   WRITE_ROLES,
   type AccountAccessRecord,
   type TransactionAccessRecord,
-} from '../../server/finance/access';
+} from '../../server/finance/access.js';
 import {
   convertMoney,
   formatMoneyFixed4,
   normalizeCurrencyCode,
   parsePositiveMoney,
-} from '../../server/finance/money';
+} from '../../server/finance/money.js';
 import {
   fetchWorkspaceExchangeRates,
   resolveRateFromRows,
-} from '../../server/finance/exchangeRates';
+} from '../../server/finance/exchangeRates.js';
 import {
   checkApiIdempotency,
   computeRequestPayloadHash,
   storeApiIdempotency,
-} from '../../server/finance/idempotency';
+} from '../../server/finance/idempotency.js';
 
 const CreateTransactionSchema = z.object({
   accountId: z.string().uuid(),

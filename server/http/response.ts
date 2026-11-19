@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { applySecurityHeaders } from '../security/headers';
-import { BadRequestError, toSafeErrorResponse } from '../security/errors';
+import { applySecurityHeaders } from '../security/headers.js';
+import { BadRequestError, toSafeErrorResponse } from '../security/errors.js';
 
 export function sendJson<T>(res: VercelResponse, statusCode: number, data: T): void {
   res.status(statusCode).json(data);

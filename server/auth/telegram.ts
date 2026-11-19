@@ -1,6 +1,6 @@
 import crypto from 'node:crypto';
 import { z } from 'zod';
-import { UnauthorizedError } from '../security/errors';
+import { UnauthorizedError } from '../security/errors.js';
 
 export type SupportedLanguage = 'uz' | 'ru' | 'en';
 

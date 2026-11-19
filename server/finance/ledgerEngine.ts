@@ -1,6 +1,6 @@
 import crypto from 'node:crypto';
 import Decimal from 'decimal.js';
-import { ConflictError, NotFoundError, ValidationError } from '../security/errors';
+import { ConflictError, NotFoundError, ValidationError } from '../security/errors.js';
 import {
   addMoney,
   computeBalancedTransfer,
@@ -14,7 +14,7 @@ import {
   type LedgerDirection,
   type LedgerTransactionType,
   type ReconciliationSummary,
-} from './money';
+} from './money.js';
 
 export interface LedgerAccountState {
   id: string;

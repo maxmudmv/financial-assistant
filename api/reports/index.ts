@@ -1,29 +1,29 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import Decimal from 'decimal.js';
-import { sendJson, withApiHandler } from '../../server/http/response';
-import { BadRequestError } from '../../server/security/errors';
+import { sendJson, withApiHandler } from '../../server/http/response.js';
+import { BadRequestError } from '../../server/security/errors.js';
 import {
   ALL_ROLES,
   authenticateFinanceRequest,
   canUserAccessAccount,
   canUserViewTransaction,
   type AccountAccessRecord,
-} from '../../server/finance/access';
+} from '../../server/finance/access.js';
 import {
   computeAnalyticsSnapshot,
   resolvePeriodRange,
   resolveTxReportingAmount,
   type AnalyticsPeriod,
   type AnalyticsTxInput,
-} from '../../server/finance/analytics';
-import { fetchWorkspaceExchangeRates, resolveRateFromRows } from '../../server/finance/exchangeRates';
-import { convertMoney, formatMoneyFixed4, normalizeCurrencyCode } from '../../server/finance/money';
+} from '../../server/finance/analytics.js';
+import { fetchWorkspaceExchangeRates, resolveRateFromRows } from '../../server/finance/exchangeRates.js';
+import { convertMoney, formatMoneyFixed4, normalizeCurrencyCode } from '../../server/finance/money.js';
 import {
   generateCsvReport,
   generatePdfReport,
   generateXlsxReport,
   type TabularReportPayload,
-} from '../../server/reports/exporters';
+} from '../../server/reports/exporters.js';
 
 export type ReportType =
   | 'daily'

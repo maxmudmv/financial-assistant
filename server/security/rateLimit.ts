@@ -1,5 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { RateLimitError } from './errors';
+import { RateLimitError } from './errors.js';
 
 export interface RateLimitResult {
   allowed: boolean;

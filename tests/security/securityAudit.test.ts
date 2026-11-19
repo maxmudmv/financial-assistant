@@ -104,4 +104,28 @@ describe('Production security hardening & zero-cost free-tier audit', () => {
     expect(depNames).not.toContain('bullmq');
     expect(depNames).not.toContain('@nestjs/core');
   });
+
+  it('uses explicit .js extensions on all relative ESM imports in api/ and server/ for Vercel Node runtime', () => {
+    const collectTsFiles = (dir: string): string[] => {
+      const entries = fs.readdirSync(dir, { withFileTypes: true });
+      return entries.flatMap((entry) => {
+        const full = path.join(dir, entry.name);
+        if (entry.isDirectory()) return collectTsFiles(full);
+        return entry.name.endsWith('.ts') ? [full] : [];
+      });
+    };
+
+    const serverFiles = [
+      ...collectTsFiles(path.resolve(process.cwd(), 'api')),
+      ...collectTsFiles(path.resolve(process.cwd(), 'server')),
+    ];
+
+    for (const file of serverFiles) {
+      const content = fs.readFileSync(file, 'utf8');
+      const matches = [...content.matchAll(/from\s+['"](\.\.?\/[^'"]+)['"]/g)];
+      for (const match of matches) {
+        expect(match[1], `Missing .js extension in ${file}: ${match[1]}`).toMatch(/\.js$/);
+      }
+    }
+  });
 });

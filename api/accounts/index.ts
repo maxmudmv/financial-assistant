@@ -1,14 +1,14 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { z } from 'zod';
 import Decimal from 'decimal.js';
-import { parseJsonBody, sendJson, withApiHandler } from '../../server/http/response';
+import { parseJsonBody, sendJson, withApiHandler } from '../../server/http/response.js';
 import {
   BadRequestError,
   ForbiddenError,
   NotFoundError,
   ValidationError,
-} from '../../server/security/errors';
-import { recordAuditLog } from '../../server/security/audit';
+} from '../../server/security/errors.js';
+import { recordAuditLog } from '../../server/security/audit.js';
 import {
   ADMIN_ROLES,
   ALL_ROLES,
@@ -16,17 +16,17 @@ import {
   canUserAccessAccount,
   WRITE_ROLES,
   type AccountAccessRecord,
-} from '../../server/finance/access';
+} from '../../server/finance/access.js';
 import {
   convertMoney,
   formatMoneyFixed4,
   normalizeCurrencyCode,
   parseMoney,
-} from '../../server/finance/money';
+} from '../../server/finance/money.js';
 import {
   fetchWorkspaceExchangeRates,
   resolveRateFromRows,
-} from '../../server/finance/exchangeRates';
+} from '../../server/finance/exchangeRates.js';
 
 const CreateAccountSchema = z.object({
   name: z.string().trim().min(1).max(80),

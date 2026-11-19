@@ -1,8 +1,8 @@
 import crypto from 'node:crypto';
 import type { VercelRequest } from '@vercel/node';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { getServerEnv } from '../config/env';
-import { getSupabaseAdmin } from '../db/supabase';
+import { getServerEnv } from '../config/env.js';
+import { getSupabaseAdmin } from '../db/supabase.js';
 import {
   extractSessionToken,
   loadSessionContextByToken,
@@ -10,10 +10,10 @@ import {
   type AuthSessionContext,
   type AuthorizedWorkspace,
   type WorkspaceRole,
-} from '../auth/session';
-import { ForbiddenError, UnauthorizedError } from '../security/errors';
-import { getClientIp } from '../security/headers';
-import { enforceRateLimit } from '../security/rateLimit';
+} from '../auth/session.js';
+import { ForbiddenError, UnauthorizedError } from '../security/errors.js';
+import { getClientIp } from '../security/headers.js';
+import { enforceRateLimit } from '../security/rateLimit.js';
 
 export const WRITE_ROLES: WorkspaceRole[] = ['owner', 'admin', 'member'];
 export const ADMIN_ROLES: WorkspaceRole[] = ['owner', 'admin'];

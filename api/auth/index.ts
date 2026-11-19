@@ -1,8 +1,8 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { z } from 'zod';
-import { getServerEnv } from '../../server/config/env';
-import { getSupabaseAdmin } from '../../server/db/supabase';
-import { verifyTelegramInitData } from '../../server/auth/telegram';
+import { getServerEnv } from '../../server/config/env.js';
+import { getSupabaseAdmin } from '../../server/db/supabase.js';
+import { verifyTelegramInitData } from '../../server/auth/telegram.js';
 import {
   buildClearSessionCookie,
   buildSessionCookie,
@@ -12,17 +12,17 @@ import {
   requireWorkspaceAccess,
   revokeDbSession,
   setSessionCookieHeader,
-} from '../../server/auth/session';
-import { parseJsonBody, sendJson, withApiHandler } from '../../server/http/response';
+} from '../../server/auth/session.js';
+import { parseJsonBody, sendJson, withApiHandler } from '../../server/http/response.js';
 import {
   BadRequestError,
   NotFoundError,
   UnauthorizedError,
   ValidationError,
-} from '../../server/security/errors';
-import { getClientIp } from '../../server/security/headers';
-import { enforceRateLimit } from '../../server/security/rateLimit';
-import { recordAuditLog } from '../../server/security/audit';
+} from '../../server/security/errors.js';
+import { getClientIp } from '../../server/security/headers.js';
+import { enforceRateLimit } from '../../server/security/rateLimit.js';
+import { recordAuditLog } from '../../server/security/audit.js';
 
 const TelegramLoginBodySchema = z.object({
   initData: z.string().min(10, 'Telegram initData is required').max(8192),

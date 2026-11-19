@@ -1,14 +1,14 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { z } from 'zod';
 import Decimal from 'decimal.js';
-import { parseJsonBody, sendJson, withApiHandler } from '../../server/http/response';
+import { parseJsonBody, sendJson, withApiHandler } from '../../server/http/response.js';
 import {
   BadRequestError,
   ForbiddenError,
   NotFoundError,
   ValidationError,
-} from '../../server/security/errors';
-import { recordAuditLog } from '../../server/security/audit';
+} from '../../server/security/errors.js';
+import { recordAuditLog } from '../../server/security/audit.js';
 import {
   ADMIN_ROLES,
   ALL_ROLES,
@@ -17,15 +17,15 @@ import {
   canUserViewTransaction,
   WRITE_ROLES,
   type AccountAccessRecord,
-} from '../../server/finance/access';
+} from '../../server/finance/access.js';
 import {
   convertMoney,
   formatMoneyFixed4,
   normalizeCurrencyCode,
   parsePositiveMoney,
-} from '../../server/finance/money';
-import { fetchWorkspaceExchangeRates, resolveRateFromRows } from '../../server/finance/exchangeRates';
-import { dispatchWorkspaceNotification } from '../../server/notifications/telegramBot';
+} from '../../server/finance/money.js';
+import { fetchWorkspaceExchangeRates, resolveRateFromRows } from '../../server/finance/exchangeRates.js';
+import { dispatchWorkspaceNotification } from '../../server/notifications/telegramBot.js';
 
 const BudgetSchema = z.object({
   name: z.string().trim().min(1).max(80),

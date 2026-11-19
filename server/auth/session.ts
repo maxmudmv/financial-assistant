@@ -1,8 +1,8 @@
 import crypto from 'node:crypto';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { ForbiddenError, UnauthorizedError } from '../security/errors';
-import type { SupportedLanguage } from './telegram';
+import { ForbiddenError, UnauthorizedError } from '../security/errors.js';
+import type { SupportedLanguage } from './telegram.js';
 
 export const SESSION_COOKIE_NAME = 'finora_session';
 

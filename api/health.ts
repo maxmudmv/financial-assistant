@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getConfigReadiness } from '../server/config/env';
-import { sendJson, withApiHandler } from '../server/http/response';
-import { BadRequestError } from '../server/security/errors';
+import { getConfigReadiness } from '../server/config/env.js';
+import { sendJson, withApiHandler } from '../server/http/response.js';
+import { BadRequestError } from '../server/security/errors.js';
 
 export default withApiHandler(async (req: VercelRequest, res: VercelResponse) => {
   if (req.method !== 'GET') {

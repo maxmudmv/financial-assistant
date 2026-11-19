@@ -1,6 +1,6 @@
 import crypto from 'node:crypto';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { ConflictError } from '../security/errors';
+import { ConflictError } from '../security/errors.js';
 
 export function computeRequestPayloadHash(payload: unknown): string {
   const canonical = canonicalizeJson(payload);
