@@ -17,6 +17,7 @@ import {
 import { GlassBadge } from '@/components/glass/GlassBadge';
 import { GlassButton } from '@/components/glass/GlassButton';
 import { GlassCard } from '@/components/glass/GlassCard';
+import { GlassSelect } from '@/components/glass/GlassSelect';
 import { LanguageSwitcher } from '@/components/glass/LanguageSwitcher';
 import { ThemeToggle } from '@/components/glass/ThemeToggle';
 import { useAuth } from '@/contexts/AuthContext';
@@ -199,21 +200,16 @@ export function SettingsPage() {
             <span className="text-xs font-semibold text-slate-600 dark:text-slate-300">
               {t.settings.reportingCurrency}
             </span>
-            <select
+            <GlassSelect
+              label={t.settings.reportingCurrency}
               value={currentSettings?.reportingCurrency ?? activeWorkspace?.defaultCurrency ?? 'UZS'}
-              onChange={(e) => {
-                const nextCurr = e.target.value;
+              onChange={(nextCurr) => {
                 patchLocalSettings({ reportingCurrency: nextCurr });
                 updateSettingsMutation.mutate({ reportingCurrency: nextCurr });
               }}
-              className="rounded-xl border border-slate-300/40 bg-white/70 px-3 py-1.5 text-xs font-semibold dark:border-white/15 dark:bg-slate-900/60"
-            >
-              {CURRENCIES.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
+              className="w-28"
+              options={CURRENCIES.map((c) => ({ value: c, label: c }))}
+            />
           </div>
 
           <label className="flex items-center justify-between text-xs font-semibold text-slate-600 dark:text-slate-300">
@@ -312,20 +308,22 @@ export function SettingsPage() {
               <div className="flex items-center gap-2">
                 {isAdminOrOwner && m.role !== 'owner' ? (
                   <>
-                    <select
+                    <GlassSelect
+                      label={t.settings.membersTitle}
                       value={m.role}
-                      onChange={(e) =>
+                      onChange={(nextRole) =>
                         roleMutation.mutate({
                           memberId: m.memberId,
-                          role: e.target.value as 'admin' | 'member' | 'read_only',
+                          role: nextRole as 'admin' | 'member' | 'read_only',
                         })
                       }
-                      className="rounded-lg border border-slate-300/40 bg-white/70 px-2 py-1 text-xs dark:border-white/15 dark:bg-slate-900/60"
-                    >
-                      <option value="admin">{t.workspace.roles.admin}</option>
-                      <option value="member">{t.workspace.roles.member}</option>
-                      <option value="read_only">{t.workspace.roles.read_only}</option>
-                    </select>
+                      className="w-36"
+                      options={[
+                        { value: 'admin', label: t.workspace.roles.admin },
+                        { value: 'member', label: t.workspace.roles.member },
+                        { value: 'read_only', label: t.workspace.roles.read_only },
+                      ]}
+                    />
                     <button
                       type="button"
                       onClick={() => removeMemberMutation.mutate(m.memberId)}
@@ -349,17 +347,19 @@ export function SettingsPage() {
               {t.settings.inviteMember}
             </p>
             <div className="flex flex-wrap gap-2">
-              <select
+              <GlassSelect
+                label={t.settings.inviteMember}
                 value={inviteRole}
-                onChange={(e) =>
-                  setInviteRole(e.target.value as 'admin' | 'member' | 'read_only')
+                onChange={(nextRole) =>
+                  setInviteRole(nextRole as 'admin' | 'member' | 'read_only')
                 }
-                className="rounded-xl border border-slate-300/40 bg-white/70 px-3 py-1.5 text-xs dark:border-white/15 dark:bg-slate-900/60"
-              >
-                <option value="member">{t.workspace.roles.member}</option>
-                <option value="admin">{t.workspace.roles.admin}</option>
-                <option value="read_only">{t.workspace.roles.read_only}</option>
-              </select>
+                className="w-40"
+                options={[
+                  { value: 'member', label: t.workspace.roles.member },
+                  { value: 'admin', label: t.workspace.roles.admin },
+                  { value: 'read_only', label: t.workspace.roles.read_only },
+                ]}
+              />
               <GlassButton size="sm" onClick={() => createInviteMutation.mutate()}>
                 <UserPlus className="h-3.5 w-3.5" />
                 {t.settings.generateInvite}

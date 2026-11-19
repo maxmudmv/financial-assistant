@@ -67,10 +67,10 @@ export function AnalyticsPage() {
                 type="button"
                 onClick={() => setPeriod(p)}
                 className={cn(
-                  'rounded-xl px-3 py-1.5 text-xs font-semibold transition',
+                  'rounded-xl px-2.5 py-1 text-xs font-semibold transition',
                   period === p
-                    ? 'bg-blue-500 text-white shadow-sm'
-                    : 'text-slate-600 dark:text-slate-300',
+                    ? 'liquid-glass-lens text-white dark:text-slate-950'
+                    : 'text-slate-600 hover:text-slate-900 dark:text-zinc-300 dark:hover:text-white',
                 )}
               >
                 {t.dashboard.periods[p]}
@@ -103,50 +103,62 @@ export function AnalyticsPage() {
         </GlassCard>
       ) : data ? (
         <>
-          {/* All 8 Required Analytics Metrics */}
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {/* All 8 Required Analytics Metrics (Compact 2-col on mobile, high contrast) */}
+          <div className="grid grid-cols-2 gap-2.5 lg:grid-cols-4">
             <GlassCard padding="sm">
-              <p className="text-xs text-slate-500">{t.dashboard.income}</p>
-              <p className="mt-1 font-mono text-xl font-extrabold text-emerald-500">
+              <p className="text-[11px] font-medium text-slate-600 dark:text-zinc-400">
+                {t.dashboard.income}
+              </p>
+              <p className="mt-1 font-mono text-base font-extrabold text-emerald-600 dark:text-emerald-400 sm:text-lg">
                 +{formatMoney(data.kpis.totalIncome, currency, language)}
               </p>
             </GlassCard>
 
             <GlassCard padding="sm">
-              <p className="text-xs text-slate-500">{t.dashboard.expenses}</p>
-              <p className="mt-1 font-mono text-xl font-extrabold text-rose-500">
+              <p className="text-[11px] font-medium text-slate-600 dark:text-zinc-400">
+                {t.dashboard.expenses}
+              </p>
+              <p className="mt-1 font-mono text-base font-extrabold text-rose-600 dark:text-rose-400 sm:text-lg">
                 −{formatMoney(data.kpis.totalExpenses, currency, language)}
               </p>
             </GlassCard>
 
             <GlassCard padding="sm">
-              <p className="text-xs text-slate-500">{t.dashboard.cashFlow}</p>
-              <p className="mt-1 font-mono text-xl font-extrabold text-blue-500">
+              <p className="text-[11px] font-medium text-slate-600 dark:text-zinc-400">
+                {t.dashboard.cashFlow}
+              </p>
+              <p className="mt-1 font-mono text-base font-extrabold text-sky-600 dark:text-sky-400 sm:text-lg">
                 {formatMoney(data.kpis.netCashFlow, currency, language)}
               </p>
             </GlassCard>
 
             <GlassCard padding="sm">
-              <p className="text-xs text-slate-500">{t.analytics.savingsRate}</p>
-              <p className="mt-1 font-mono text-2xl font-extrabold text-emerald-500">
+              <p className="text-[11px] font-medium text-slate-600 dark:text-zinc-400">
+                {t.analytics.savingsRate}
+              </p>
+              <p className="mt-1 font-mono text-lg font-extrabold text-emerald-600 dark:text-emerald-400 sm:text-xl">
                 {data.kpis.savingsRate}%
               </p>
             </GlassCard>
 
             <GlassCard padding="sm">
-              <p className="text-xs text-slate-500">{t.analytics.avgDailyExpense}</p>
-              <p className="mt-1 font-mono text-xl font-extrabold text-slate-900 dark:text-white">
+              <p className="text-[11px] font-medium text-slate-600 dark:text-zinc-400">
+                {t.analytics.avgDailyExpense}
+              </p>
+              <p className="mt-1 font-mono text-base font-extrabold text-slate-900 dark:text-white sm:text-lg">
                 {formatMoney(data.kpis.averageDailyExpenses, currency, language)}
               </p>
             </GlassCard>
 
             <GlassCard padding="sm">
-              <p className="text-xs text-slate-500">{t.analytics.highestCategory}</p>
-              <p className="mt-1 truncate text-base font-extrabold text-violet-500">
+              <p className="text-[11px] font-medium text-slate-600 dark:text-zinc-400">
+                {t.analytics.highestCategory}
+              </p>
+              <p className="mt-1 truncate text-sm font-extrabold text-violet-600 dark:text-violet-400 sm:text-base">
                 {data.kpis.highestSpendingCategory?.name ?? '—'}
               </p>
               {data.kpis.highestSpendingCategory && (
-                <p className="font-mono text-xs text-slate-500">
+                <p className="font-mono text-[11px] text-slate-600 dark:text-zinc-400">
                   {formatMoney(
                     data.kpis.highestSpendingCategory.amountFormatted,
                     currency,
@@ -158,11 +170,15 @@ export function AnalyticsPage() {
             </GlassCard>
 
             <GlassCard padding="sm">
-              <p className="text-xs text-slate-500">{t.analytics.monthlyGrowth}</p>
+              <p className="text-[11px] font-medium text-slate-600 dark:text-zinc-400">
+                {t.analytics.monthlyGrowth}
+              </p>
               <p
                 className={cn(
-                  'mt-1 font-mono text-2xl font-extrabold',
-                  data.kpis.monthlyGrowthPct <= 0 ? 'text-emerald-500' : 'text-rose-500',
+                  'mt-1 font-mono text-lg font-extrabold sm:text-xl',
+                  data.kpis.monthlyGrowthPct <= 0
+                    ? 'text-emerald-600 dark:text-emerald-400'
+                    : 'text-rose-600 dark:text-rose-400',
                 )}
               >
                 {data.kpis.monthlyGrowthPct > 0 ? '+' : ''}
@@ -171,7 +187,9 @@ export function AnalyticsPage() {
             </GlassCard>
 
             <GlassCard padding="sm">
-              <p className="text-xs text-slate-500">{t.analytics.budgetUsage}</p>
+              <p className="text-[11px] font-medium text-slate-600 dark:text-zinc-400">
+                {t.analytics.budgetUsage}
+              </p>
               <p
                 className={cn(
                   'mt-1 font-mono text-2xl font-extrabold',

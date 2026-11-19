@@ -5,6 +5,7 @@ import { I18nProvider } from '../../src/i18n/I18nContext';
 import { ThemeProvider } from '../../src/contexts/ThemeContext';
 import { LanguageSwitcher } from '../../src/components/glass/LanguageSwitcher';
 import { ThemeToggle } from '../../src/components/glass/ThemeToggle';
+import { GlassSelect } from '../../src/components/glass/GlassSelect';
 
 describe('Interactive UI regression tests (LanguageSwitcher & ThemeToggle)', () => {
   it('invokes onChange with the exact newly selected language (no stale closure)', () => {
@@ -45,5 +46,25 @@ describe('Interactive UI regression tests (LanguageSwitcher & ThemeToggle)', () 
     fireEvent.click(screen.getByRole('button', { name: 'Tungi' }));
     expect(onThemeChange).toHaveBeenCalledWith('dark');
     expect(document.documentElement.classList.contains('dark')).toBe(true);
+  });
+
+  it('opens custom Liquid Glass selector sheet and emits chosen value', () => {
+    const onChange = vi.fn();
+    render(
+      <GlassSelect
+        label="Turi"
+        value="all"
+        onChange={onChange}
+        options={[
+          { value: 'all', label: 'Barchasi' },
+          { value: 'income', label: 'Daromad' },
+          { value: 'expense', label: 'Xarajat' },
+        ]}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Turi' }));
+    fireEvent.click(screen.getByRole('option', { name: 'Daromad' }));
+    expect(onChange).toHaveBeenCalledWith('income');
   });
 });

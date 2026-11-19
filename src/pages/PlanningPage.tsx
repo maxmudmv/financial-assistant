@@ -18,6 +18,7 @@ import {
 import { GlassBadge } from '@/components/glass/GlassBadge';
 import { GlassButton } from '@/components/glass/GlassButton';
 import { GlassCard } from '@/components/glass/GlassCard';
+import { GlassSelect } from '@/components/glass/GlassSelect';
 import { useAuth } from '@/contexts/AuthContext';
 import { useI18n } from '@/i18n/I18nContext';
 import { formatDateTime, formatMoney } from '@/i18n/formatters';
@@ -383,10 +384,12 @@ export function PlanningPage() {
     <div className="flex flex-col gap-5 pb-24">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+          <h1 className="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-2xl">
             {t.planning.title}
           </h1>
-          <p className="text-sm text-slate-600 dark:text-slate-300">{t.planning.subtitle}</p>
+          <p className="text-xs text-slate-600 dark:text-zinc-400 sm:text-sm">
+            {t.planning.subtitle}
+          </p>
         </div>
 
         <div className="liquid-glass-pill inline-flex flex-wrap gap-1 rounded-2xl p-1">
@@ -396,10 +399,10 @@ export function PlanningPage() {
               type="button"
               onClick={() => setTab(key)}
               className={cn(
-                'inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-semibold transition',
+                'inline-flex items-center gap-1.5 rounded-xl px-2.5 py-1 text-xs font-semibold transition',
                 tab === key
-                  ? 'bg-gradient-to-r from-blue-500 to-violet-600 text-white shadow-sm'
-                  : 'text-slate-600 dark:text-slate-300',
+                  ? 'liquid-glass-lens text-white dark:text-slate-950'
+                  : 'text-slate-600 hover:text-slate-900 dark:text-zinc-300 dark:hover:text-white',
               )}
             >
               <Icon className="h-3.5 w-3.5" />
@@ -411,19 +414,20 @@ export function PlanningPage() {
 
       {/* Account Selector for Goal Contributions / Debt Repayments / Recurring */}
       {accounts.length > 0 && tab !== 'budgets' && (
-        <div className="flex items-center gap-2 text-xs">
-          <span className="font-semibold text-slate-500">{t.transactions.accountLabel}:</span>
-          <select
+        <div className="flex flex-wrap items-center gap-2 text-xs">
+          <span className="font-semibold text-slate-600 dark:text-zinc-300">
+            {t.transactions.accountLabel}:
+          </span>
+          <GlassSelect
+            label={t.transactions.accountLabel}
             value={activeAccountId}
-            onChange={(e) => setSelectedAccountId(e.target.value)}
-            className="liquid-glass-pill rounded-xl px-3 py-1.5 font-semibold text-slate-900 dark:text-white"
-          >
-            {accounts.map((acc) => (
-              <option key={acc.id} value={acc.id}>
-                {acc.name} ({acc.currentBalance} {acc.currency})
-              </option>
-            ))}
-          </select>
+            onChange={setSelectedAccountId}
+            className="w-full sm:w-64"
+            options={accounts.map((acc) => ({
+              value: acc.id,
+              label: `${acc.name} (${acc.currentBalance} ${acc.currency})`,
+            }))}
+          />
         </div>
       )}
 
@@ -459,29 +463,30 @@ export function PlanningPage() {
                   placeholder={`${t.planning.budgets.limitLabel} (${defaultCurrency})`}
                   className="rounded-xl border border-slate-300/40 bg-white/70 px-3 py-2 font-mono text-xs dark:border-white/15 dark:bg-slate-900/60"
                 />
-                <select
+                <GlassSelect
+                  label={t.transactions.categoryLabel}
                   value={budgetCategoryId}
-                  onChange={(e) => setBudgetCategoryId(e.target.value)}
-                  className="rounded-xl border border-slate-300/40 bg-white/70 px-3 py-2 text-xs dark:border-white/15 dark:bg-slate-900/60"
-                >
-                  <option value="">{t.common.all}</option>
-                  {(categoriesQuery.data?.categories ?? []).map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                    </option>
-                  ))}
-                </select>
-                <select
+                  onChange={setBudgetCategoryId}
+                  options={[
+                    { value: '', label: t.common.all },
+                    ...(categoriesQuery.data?.categories ?? []).map((c) => ({
+                      value: c.id,
+                      label: c.name,
+                    })),
+                  ]}
+                />
+                <GlassSelect
+                  label={t.planning.tabs.budgets}
                   value={budgetPeriod}
-                  onChange={(e) =>
-                    setBudgetPeriod(e.target.value as 'monthly' | 'weekly' | 'custom')
+                  onChange={(val) =>
+                    setBudgetPeriod(val as 'monthly' | 'weekly' | 'custom')
                   }
-                  className="rounded-xl border border-slate-300/40 bg-white/70 px-2.5 py-2 text-xs dark:border-white/15 dark:bg-slate-900/60"
-                >
-                  <option value="monthly">{t.planning.budgets.periodMonthly}</option>
-                  <option value="weekly">{t.planning.budgets.periodWeekly}</option>
-                  <option value="custom">{t.planning.budgets.periodCustom}</option>
-                </select>
+                  options={[
+                    { value: 'monthly', label: t.planning.budgets.periodMonthly },
+                    { value: 'weekly', label: t.planning.budgets.periodWeekly },
+                    { value: 'custom', label: t.planning.budgets.periodCustom },
+                  ]}
+                />
               </div>
 
               {budgetPeriod === 'custom' && (
@@ -832,15 +837,16 @@ export function PlanningPage() {
                   placeholder={t.planning.debts.counterparty}
                   className="rounded-xl border border-slate-300/40 bg-white/70 px-3 py-2 text-xs dark:border-white/15 dark:bg-slate-900/60"
                 />
-                <select
+                <GlassSelect
+                  label={t.planning.tabs.debts}
                   value={debtDirection}
                   disabled={Boolean(editingDebtId)}
-                  onChange={(e) => setDebtDirection(e.target.value as 'borrowed' | 'lent')}
-                  className="rounded-xl border border-slate-300/40 bg-white/70 px-3 py-2 text-xs disabled:opacity-60 dark:border-white/15 dark:bg-slate-900/60"
-                >
-                  <option value="borrowed">{t.planning.debts.borrowed}</option>
-                  <option value="lent">{t.planning.debts.lent}</option>
-                </select>
+                  onChange={(val) => setDebtDirection(val as 'borrowed' | 'lent')}
+                  options={[
+                    { value: 'borrowed', label: t.planning.debts.borrowed },
+                    { value: 'lent', label: t.planning.debts.lent },
+                  ]}
+                />
                 <input
                   value={debtAmount}
                   disabled={Boolean(editingDebtId)}
@@ -1063,14 +1069,15 @@ export function PlanningPage() {
                   placeholder={t.accounts.nameLabel}
                   className="rounded-xl border border-slate-300/40 bg-white/70 px-3 py-2 text-xs dark:border-white/15 dark:bg-slate-900/60"
                 />
-                <select
+                <GlassSelect
+                  label={t.transactions.typeLabel}
                   value={recType}
-                  onChange={(e) => setRecType(e.target.value as 'expense' | 'income')}
-                  className="rounded-xl border border-slate-300/40 bg-white/70 px-3 py-2 text-xs dark:border-white/15 dark:bg-slate-900/60"
-                >
-                  <option value="expense">{t.transactions.types.expense}</option>
-                  <option value="income">{t.transactions.types.income}</option>
-                </select>
+                  onChange={(val) => setRecType(val as 'expense' | 'income')}
+                  options={[
+                    { value: 'expense', label: t.transactions.types.expense },
+                    { value: 'income', label: t.transactions.types.income },
+                  ]}
+                />
                 <input
                   value={recAmount}
                   onChange={(e) => setRecAmount(e.target.value)}
@@ -1078,18 +1085,19 @@ export function PlanningPage() {
                   placeholder={t.transactions.amountLabel}
                   className="rounded-xl border border-slate-300/40 bg-white/70 px-3 py-2 font-mono text-xs dark:border-white/15 dark:bg-slate-900/60"
                 />
-                <select
+                <GlassSelect
+                  label={t.planning.recurring.frequency}
                   value={recFrequency}
-                  onChange={(e) =>
-                    setRecFrequency(e.target.value as 'daily' | 'weekly' | 'monthly' | 'yearly')
+                  onChange={(val) =>
+                    setRecFrequency(val as 'daily' | 'weekly' | 'monthly' | 'yearly')
                   }
-                  className="rounded-xl border border-slate-300/40 bg-white/70 px-3 py-2 text-xs dark:border-white/15 dark:bg-slate-900/60"
-                >
-                  <option value="daily">Daily</option>
-                  <option value="weekly">Weekly</option>
-                  <option value="monthly">Monthly</option>
-                  <option value="yearly">Yearly</option>
-                </select>
+                  options={[
+                    { value: 'daily', label: t.reports.types.daily },
+                    { value: 'weekly', label: t.reports.types.weekly },
+                    { value: 'monthly', label: t.reports.types.monthly },
+                    { value: 'yearly', label: t.reports.types.yearly },
+                  ]}
+                />
                 <input
                   type="date"
                   value={recStartDate}

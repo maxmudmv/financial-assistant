@@ -14,6 +14,7 @@ import {
 import { GlassBadge } from '@/components/glass/GlassBadge';
 import { GlassButton } from '@/components/glass/GlassButton';
 import { GlassCard } from '@/components/glass/GlassCard';
+import { GlassSelect } from '@/components/glass/GlassSelect';
 import { useAuth } from '@/contexts/AuthContext';
 import { useI18n } from '@/i18n/I18nContext';
 import { formatDateTime, formatMoney } from '@/i18n/formatters';
@@ -207,37 +208,43 @@ export function TransfersPage() {
             className="grid gap-3 sm:grid-cols-2"
           >
             <div>
-              <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-slate-300">
+              <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-zinc-300">
                 {t.transfers.fromAccount}
               </label>
-              <select
-                {...transferForm.register('fromAccountId')}
-                className="w-full rounded-xl border border-slate-300/50 bg-white/70 px-3 py-2 text-sm text-slate-900 outline-none dark:border-white/15 dark:bg-slate-900/60 dark:text-white"
-              >
-                <option value="">—</option>
-                {accounts.map((acc) => (
-                  <option key={acc.id} value={acc.id}>
-                    {acc.name} ({acc.currentBalance} {acc.currency})
-                  </option>
-                ))}
-              </select>
+              <GlassSelect
+                label={t.transfers.fromAccount}
+                value={transferForm.watch('fromAccountId')}
+                onChange={(val) =>
+                  transferForm.setValue('fromAccountId', val, { shouldValidate: true })
+                }
+                options={[
+                  { value: '', label: '—' },
+                  ...accounts.map((acc) => ({
+                    value: acc.id,
+                    label: `${acc.name} (${acc.currentBalance} ${acc.currency})`,
+                  })),
+                ]}
+              />
             </div>
 
             <div>
-              <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-slate-300">
+              <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-zinc-300">
                 {t.transfers.toAccount}
               </label>
-              <select
-                {...transferForm.register('toAccountId')}
-                className="w-full rounded-xl border border-slate-300/50 bg-white/70 px-3 py-2 text-sm text-slate-900 outline-none dark:border-white/15 dark:bg-slate-900/60 dark:text-white"
-              >
-                <option value="">—</option>
-                {accounts.map((acc) => (
-                  <option key={acc.id} value={acc.id}>
-                    {acc.name} ({acc.currentBalance} {acc.currency})
-                  </option>
-                ))}
-              </select>
+              <GlassSelect
+                label={t.transfers.toAccount}
+                value={transferForm.watch('toAccountId')}
+                onChange={(val) =>
+                  transferForm.setValue('toAccountId', val, { shouldValidate: true })
+                }
+                options={[
+                  { value: '', label: '—' },
+                  ...accounts.map((acc) => ({
+                    value: acc.id,
+                    label: `${acc.name} (${acc.currentBalance} ${acc.currency})`,
+                  })),
+                ]}
+              />
             </div>
 
             <div>
@@ -346,31 +353,27 @@ export function TransfersPage() {
             onSubmit={manualRateForm.handleSubmit((vals) => manualRateMutation.mutate(vals))}
             className="mt-4 grid gap-3 rounded-2xl border border-slate-300/35 p-3.5 sm:grid-cols-4 dark:border-white/10"
           >
-            <select
-              {...manualRateForm.register('baseCurrency')}
-              className="rounded-xl border border-slate-300/50 bg-white/70 px-3 py-2 text-xs text-slate-900 dark:border-white/15 dark:bg-slate-900/60 dark:text-white"
-            >
-              {(ratesQuery.data?.supportedCurrencies ?? ['USD', 'EUR', 'RUB', 'GBP', 'UZS']).map(
-                (c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ),
+            <GlassSelect
+              label={t.transfers.ratesTitle}
+              value={manualRateForm.watch('baseCurrency')}
+              onChange={(val) =>
+                manualRateForm.setValue('baseCurrency', val, { shouldValidate: true })
+              }
+              options={(ratesQuery.data?.supportedCurrencies ?? ['USD', 'EUR', 'RUB', 'GBP', 'UZS']).map(
+                (c) => ({ value: c, label: c }),
               )}
-            </select>
+            />
 
-            <select
-              {...manualRateForm.register('quoteCurrency')}
-              className="rounded-xl border border-slate-300/50 bg-white/70 px-3 py-2 text-xs text-slate-900 dark:border-white/15 dark:bg-slate-900/60 dark:text-white"
-            >
-              {(ratesQuery.data?.supportedCurrencies ?? ['UZS', 'USD', 'EUR', 'RUB', 'GBP']).map(
-                (c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ),
+            <GlassSelect
+              label={t.transfers.ratesTitle}
+              value={manualRateForm.watch('quoteCurrency')}
+              onChange={(val) =>
+                manualRateForm.setValue('quoteCurrency', val, { shouldValidate: true })
+              }
+              options={(ratesQuery.data?.supportedCurrencies ?? ['UZS', 'USD', 'EUR', 'RUB', 'GBP']).map(
+                (c) => ({ value: c, label: c }),
               )}
-            </select>
+            />
 
             <input
               {...manualRateForm.register('rate')}

@@ -83,10 +83,12 @@ export function ReportsPage() {
       {/* Header + Authenticated Export Buttons */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+          <h1 className="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-2xl">
             {t.reports.title}
           </h1>
-          <p className="text-sm text-slate-600 dark:text-slate-300">{t.reports.subtitle}</p>
+          <p className="text-xs text-slate-600 dark:text-zinc-400 sm:text-sm">
+            {t.reports.subtitle}
+          </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
@@ -126,7 +128,7 @@ export function ReportsPage() {
       )}
 
       {/* Report Type Selector (All 7 Required Types) */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-2.5">
         <div className="liquid-glass-pill inline-flex flex-wrap gap-1 rounded-2xl p-1">
           {REPORT_TYPES.map((rt) => (
             <button
@@ -134,10 +136,10 @@ export function ReportsPage() {
               type="button"
               onClick={() => setReportType(rt)}
               className={cn(
-                'rounded-xl px-3 py-1.5 text-xs font-semibold transition',
+                'rounded-xl px-2.5 py-1 text-xs font-semibold transition',
                 reportType === rt
-                  ? 'bg-gradient-to-r from-blue-500 to-violet-600 text-white shadow-sm'
-                  : 'text-slate-600 dark:text-slate-300',
+                  ? 'liquid-glass-lens text-white dark:text-slate-950'
+                  : 'text-slate-600 hover:text-slate-900 dark:text-zinc-300 dark:hover:text-white',
               )}
             >
               {t.reports.types[rt]}
@@ -154,8 +156,8 @@ export function ReportsPage() {
               className={cn(
                 'rounded-xl px-2.5 py-1 text-xs font-semibold transition',
                 period === p
-                  ? 'bg-blue-500 text-white shadow-sm'
-                  : 'text-slate-600 dark:text-slate-300',
+                  ? 'liquid-glass-lens text-white dark:text-slate-950'
+                  : 'text-slate-600 hover:text-slate-900 dark:text-zinc-300 dark:hover:text-white',
               )}
             >
               {t.dashboard.periods[p]}
@@ -188,28 +190,36 @@ export function ReportsPage() {
       ) : data ? (
         <>
           {/* Summary KPI Row */}
-          <div className="grid gap-3 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
             <GlassCard padding="sm">
-              <p className="text-xs text-slate-500">{t.dashboard.income}</p>
-              <p className="mt-1 font-mono text-lg font-extrabold text-emerald-500">
+              <p className="text-[11px] font-medium text-slate-600 dark:text-zinc-400">
+                {t.dashboard.income}
+              </p>
+              <p className="mt-1 font-mono text-base font-extrabold text-emerald-600 dark:text-emerald-400 sm:text-lg">
                 +{formatMoney(data.metrics.totalIncome, currency, language)}
               </p>
             </GlassCard>
             <GlassCard padding="sm">
-              <p className="text-xs text-slate-500">{t.dashboard.expenses}</p>
-              <p className="mt-1 font-mono text-lg font-extrabold text-rose-500">
+              <p className="text-[11px] font-medium text-slate-600 dark:text-zinc-400">
+                {t.dashboard.expenses}
+              </p>
+              <p className="mt-1 font-mono text-base font-extrabold text-rose-600 dark:text-rose-400 sm:text-lg">
                 −{formatMoney(data.metrics.totalExpenses, currency, language)}
               </p>
             </GlassCard>
             <GlassCard padding="sm">
-              <p className="text-xs text-slate-500">{t.dashboard.cashFlow}</p>
-              <p className="mt-1 font-mono text-lg font-extrabold text-blue-500">
+              <p className="text-[11px] font-medium text-slate-600 dark:text-zinc-400">
+                {t.dashboard.cashFlow}
+              </p>
+              <p className="mt-1 font-mono text-base font-extrabold text-sky-600 dark:text-sky-400 sm:text-lg">
                 {formatMoney(data.metrics.netCashFlow, currency, language)}
               </p>
             </GlassCard>
             <GlassCard padding="sm">
-              <p className="text-xs text-slate-500">{t.analytics.savingsRate}</p>
-              <p className="mt-1 font-mono text-lg font-extrabold text-violet-500">
+              <p className="text-[11px] font-medium text-slate-600 dark:text-zinc-400">
+                {t.analytics.savingsRate}
+              </p>
+              <p className="mt-1 font-mono text-base font-extrabold text-violet-600 dark:text-violet-400 sm:text-lg">
                 {data.metrics.savingsRate}% ({data.transactionCount})
               </p>
             </GlassCard>

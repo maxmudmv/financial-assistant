@@ -69,7 +69,7 @@ export function initTelegramWebApp(): TelegramWebApp | null {
 export function syncTelegramChromeColors(resolvedTheme: 'dark' | 'light'): void {
   const webApp = getTelegramWebApp();
   if (!webApp) return;
-  const color = resolvedTheme === 'dark' ? '#060B16' : '#DCE7F3';
+  const color = resolvedTheme === 'dark' ? '#07080B' : '#F2F4F8';
   try {
     webApp.setHeaderColor?.(color);
     webApp.setBackgroundColor?.(color);

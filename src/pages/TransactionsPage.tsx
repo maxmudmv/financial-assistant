@@ -18,6 +18,7 @@ import {
 import { GlassBadge } from '@/components/glass/GlassBadge';
 import { GlassButton } from '@/components/glass/GlassButton';
 import { GlassCard } from '@/components/glass/GlassCard';
+import { GlassSelect } from '@/components/glass/GlassSelect';
 import { useAuth } from '@/contexts/AuthContext';
 import { useI18n } from '@/i18n/I18nContext';
 import { formatDateTime, formatMoney } from '@/i18n/formatters';
@@ -262,46 +263,46 @@ export function TransactionsPage() {
             />
           </div>
 
-          <select
+          <GlassSelect
+            label={t.transactions.typeLabel}
             value={filterType}
-            onChange={(e) => setFilterType(e.target.value)}
-            className="rounded-xl border border-slate-300/40 bg-white/60 px-3 py-2 text-xs text-slate-900 outline-none dark:border-white/10 dark:bg-slate-900/50 dark:text-white"
-          >
-            <option value="all">{t.common.all}</option>
-            {(['income', 'expense', 'transfer', 'refund', 'adjustment'] as TransactionType[]).map(
-              (typeKey) => (
-                <option key={typeKey} value={typeKey}>
-                  {t.transactions.types[typeKey]}
-                </option>
+            onChange={setFilterType}
+            options={[
+              { value: 'all', label: t.common.all },
+              ...(['income', 'expense', 'transfer', 'refund', 'adjustment'] as TransactionType[]).map(
+                (typeKey) => ({
+                  value: typeKey,
+                  label: t.transactions.types[typeKey],
+                }),
               ),
-            )}
-          </select>
+            ]}
+          />
 
-          <select
+          <GlassSelect
+            label={t.transactions.sortNewest}
             value={sortMode}
-            onChange={(e) => setSortMode(e.target.value as 'newest' | 'oldest' | 'amount')}
-            className="rounded-xl border border-slate-300/40 bg-white/60 px-3 py-2 text-xs text-slate-900 outline-none dark:border-white/10 dark:bg-slate-900/50 dark:text-white"
-          >
-            <option value="newest">{t.transactions.sortNewest}</option>
-            <option value="oldest">{t.transactions.sortOldest}</option>
-            <option value="amount">{t.transactions.sortAmountHigh}</option>
-          </select>
+            onChange={(val) => setSortMode(val as 'newest' | 'oldest' | 'amount')}
+            options={[
+              { value: 'newest', label: t.transactions.sortNewest },
+              { value: 'oldest', label: t.transactions.sortOldest },
+              { value: 'amount', label: t.transactions.sortAmountHigh },
+            ]}
+          />
 
           {accounts.length > 1 && (
-            <select
+            <GlassSelect
+              label={t.transactions.accountLabel}
               value={filterAccountId}
-              onChange={(e) => setFilterAccountId(e.target.value)}
-              className="rounded-xl border border-slate-300/40 bg-white/60 px-3 py-2 text-xs text-slate-900 outline-none sm:col-span-2 dark:border-white/10 dark:bg-slate-900/50 dark:text-white"
-            >
-              <option value="">
-                {t.transactions.accountLabel}: {t.common.all}
-              </option>
-              {accounts.map((acc) => (
-                <option key={acc.id} value={acc.id}>
-                  {acc.name} ({acc.currency})
-                </option>
-              ))}
-            </select>
+              onChange={setFilterAccountId}
+              className="sm:col-span-2"
+              options={[
+                { value: '', label: `${t.transactions.accountLabel}: ${t.common.all}` },
+                ...accounts.map((acc) => ({
+                  value: acc.id,
+                  label: `${acc.name} (${acc.currency})`,
+                })),
+              ]}
+            />
           )}
         </div>
       </GlassCard>
@@ -596,19 +597,22 @@ export function TransactionsPage() {
                 >
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-slate-300">
+                      <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-zinc-300">
                         {t.transactions.typeLabel}
                       </label>
-                      <select
-                        {...form.register('type')}
-                        className="w-full rounded-xl border border-slate-300/50 bg-white/70 px-3 py-2 text-sm text-slate-900 outline-none dark:border-white/15 dark:bg-slate-900/60 dark:text-white"
-                      >
-                        {POSTABLE_TYPES.map((typeKey) => (
-                          <option key={typeKey} value={typeKey}>
-                            {t.transactions.types[typeKey]}
-                          </option>
-                        ))}
-                      </select>
+                      <GlassSelect
+                        label={t.transactions.typeLabel}
+                        value={form.watch('type')}
+                        onChange={(val) =>
+                          form.setValue('type', val as (typeof POSTABLE_TYPES)[number], {
+                            shouldValidate: true,
+                          })
+                        }
+                        options={POSTABLE_TYPES.map((typeKey) => ({
+                          value: typeKey,
+                          label: t.transactions.types[typeKey],
+                        }))}
+                      />
                     </div>
 
                     <div>
@@ -626,50 +630,60 @@ export function TransactionsPage() {
 
                   {watchedType === 'adjustment' && (
                     <div>
-                      <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-slate-300">
+                      <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-zinc-300">
                         {t.transactions.adjustmentDirectionLabel}
                       </label>
-                      <select
-                        {...form.register('adjustmentDirection')}
-                        className="w-full rounded-xl border border-slate-300/50 bg-white/70 px-3 py-2 text-sm text-slate-900 outline-none dark:border-white/15 dark:bg-slate-900/60 dark:text-white"
-                      >
-                        <option value="credit">{t.transactions.creditDirection}</option>
-                        <option value="debit">{t.transactions.debitDirection}</option>
-                      </select>
+                      <GlassSelect
+                        label={t.transactions.adjustmentDirectionLabel}
+                        value={form.watch('adjustmentDirection')}
+                        onChange={(val) =>
+                          form.setValue('adjustmentDirection', val as 'credit' | 'debit', {
+                            shouldValidate: true,
+                          })
+                        }
+                        options={[
+                          { value: 'credit', label: t.transactions.creditDirection },
+                          { value: 'debit', label: t.transactions.debitDirection },
+                        ]}
+                      />
                     </div>
                   )}
 
                   <div>
-                    <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-slate-300">
+                    <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-zinc-300">
                       {t.transactions.accountLabel}
                     </label>
-                    <select
-                      {...form.register('accountId')}
-                      className="w-full rounded-xl border border-slate-300/50 bg-white/70 px-3 py-2 text-sm text-slate-900 outline-none dark:border-white/15 dark:bg-slate-900/60 dark:text-white"
-                    >
-                      {accounts.map((acc) => (
-                        <option key={acc.id} value={acc.id}>
-                          {acc.name} ({acc.currency})
-                        </option>
-                      ))}
-                    </select>
+                    <GlassSelect
+                      label={t.transactions.accountLabel}
+                      value={form.watch('accountId')}
+                      onChange={(val) =>
+                        form.setValue('accountId', val, { shouldValidate: true })
+                      }
+                      options={accounts.map((acc) => ({
+                        value: acc.id,
+                        label: `${acc.name} (${acc.currency})`,
+                      }))}
+                    />
                   </div>
 
                   <div>
-                    <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-slate-300">
+                    <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-zinc-300">
                       {t.transactions.categoryLabel}
                     </label>
-                    <select
-                      {...form.register('categoryId')}
-                      className="w-full rounded-xl border border-slate-300/50 bg-white/70 px-3 py-2 text-sm text-slate-900 outline-none dark:border-white/15 dark:bg-slate-900/60 dark:text-white"
-                    >
-                      <option value="">—</option>
-                      {categories.map((cat) => (
-                        <option key={cat.id} value={cat.id}>
-                          {localizeCategory(cat)}
-                        </option>
-                      ))}
-                    </select>
+                    <GlassSelect
+                      label={t.transactions.categoryLabel}
+                      value={form.watch('categoryId') ?? ''}
+                      onChange={(val) =>
+                        form.setValue('categoryId', val, { shouldValidate: true })
+                      }
+                      options={[
+                        { value: '', label: '—' },
+                        ...categories.map((cat) => ({
+                          value: cat.id,
+                          label: localizeCategory(cat),
+                        })),
+                      ]}
+                    />
                   </div>
 
                   <div>

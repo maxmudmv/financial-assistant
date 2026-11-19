@@ -24,9 +24,9 @@ import { triggerHaptic } from '@/lib/telegram';
 
 const DOCK_LENS_SPRING = {
   type: 'spring' as const,
-  stiffness: 380,
-  damping: 24,
-  mass: 0.85,
+  stiffness: 400,
+  damping: 26,
+  mass: 0.82,
 };
 
 const LIQUID_TAP_SPRING = {
@@ -61,7 +61,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
     { to: '/settings', label: t.nav.settings, icon: Settings },
   ];
 
-  // Exactly 4 primary tabs in the floating Apple Liquid Glass mobile dock
+  // Exactly 4 clean primary tabs in the floating Apple Liquid Glass mobile dock
   const primaryMobileTabs = [
     { id: 'dashboard', to: '/', label: t.nav.dashboard, icon: LayoutDashboard },
     { id: 'transactions', to: '/transactions', label: t.nav.transactions, icon: ListOrdered },
@@ -69,52 +69,67 @@ export function AppLayout({ children }: { children: ReactNode }) {
   ] as const;
 
   const secondaryMenuItems = [
-    { to: '/accounts', label: t.nav.accounts, icon: Wallet, accent: 'from-sky-400 to-blue-600' },
+    {
+      to: '/accounts',
+      label: t.nav.accounts,
+      icon: Wallet,
+      iconTone: 'bg-sky-500/15 text-sky-600 dark:text-sky-400',
+    },
     {
       to: '/transfers',
       label: t.nav.transfers,
       icon: ArrowLeftRight,
-      accent: 'from-cyan-400 to-teal-500',
+      iconTone: 'bg-teal-500/15 text-teal-600 dark:text-teal-400',
     },
-    { to: '/planning', label: t.nav.planning, icon: Target, accent: 'from-violet-400 to-indigo-600' },
+    {
+      to: '/planning',
+      label: t.nav.planning,
+      icon: Target,
+      iconTone: 'bg-violet-500/15 text-violet-600 dark:text-violet-400',
+    },
     {
       to: '/reports',
       label: t.nav.reports,
       icon: FileBarChart2,
-      accent: 'from-emerald-400 to-teal-600',
+      iconTone: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400',
     },
-    { to: '/ledger', label: t.nav.ledger, icon: BookOpenCheck, accent: 'from-amber-400 to-orange-500' },
+    {
+      to: '/ledger',
+      label: t.nav.ledger,
+      icon: BookOpenCheck,
+      iconTone: 'bg-amber-500/15 text-amber-600 dark:text-amber-400',
+    },
     {
       to: '/settings',
       label: t.nav.settings,
       icon: Settings,
-      accent: 'from-slate-400 to-slate-600',
+      iconTone: 'bg-slate-500/15 text-slate-600 dark:text-zinc-300',
     },
   ];
 
   const isSecondaryRoute = SECONDARY_ROUTES.some((route) =>
     location.pathname.startsWith(route),
   );
-  const activeMobileTabId = menuOpen || isSecondaryRoute
-    ? 'more'
-    : location.pathname.startsWith('/transactions')
-      ? 'transactions'
-      : location.pathname.startsWith('/analytics')
-        ? 'analytics'
-        : 'dashboard';
+  const activeMobileTabId =
+    menuOpen || isSecondaryRoute
+      ? 'more'
+      : location.pathname.startsWith('/transactions')
+        ? 'transactions'
+        : location.pathname.startsWith('/analytics')
+          ? 'analytics'
+          : 'dashboard';
 
   return (
     <div className="finora-canvas flex min-h-[100dvh] flex-col">
-      {/* Ambient floating light orbs for real optical glass refraction */}
+      {/* Subtle restrained ambient depth orbs */}
       <div className="finora-ambient-orbs" aria-hidden="true">
         <span className="finora-orb finora-orb-1" />
         <span className="finora-orb finora-orb-2" />
-        <span className="finora-orb finora-orb-3" />
       </div>
 
-      {/* Sleek Single-Row Liquid Glass Top Header */}
-      <header className="sticky top-0 z-30 mx-auto w-full max-w-6xl px-3 pt-2.5 sm:px-4 sm:pt-4">
-        <div className="liquid-glass-pill flex items-center justify-between gap-2 rounded-full px-3 py-1.5 sm:px-4 sm:py-2">
+      {/* Compact Single-Row Liquid Glass Top Header */}
+      <header className="sticky top-0 z-30 mx-auto w-full max-w-6xl px-3 pt-2.5 sm:px-4 sm:pt-3.5">
+        <div className="liquid-glass-pill flex items-center justify-between gap-2 rounded-full px-2.5 py-1.5 sm:px-3.5 sm:py-2">
           <div className="flex min-w-0 items-center gap-2">
             <motion.button
               type="button"
@@ -124,23 +139,23 @@ export function AppLayout({ children }: { children: ReactNode }) {
                 triggerHaptic('selection');
                 navigate('/');
               }}
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-sky-400 via-blue-500 to-violet-600 text-white shadow-[0_6px_16px_-4px_rgba(59,130,246,0.65),inset_0_1.5px_1px_rgba(255,255,255,0.65)]"
+              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-900 text-white shadow-sm dark:bg-white dark:text-slate-950"
               aria-label={t.app.name}
             >
-              <ShieldCheck className="h-4 w-4" />
+              <ShieldCheck className="h-3.5 w-3.5" />
             </motion.button>
             <div className="min-w-0">
               <div className="flex items-center gap-1.5">
-                <span className="truncate text-sm font-extrabold tracking-tight text-slate-900 dark:text-white">
+                <span className="truncate text-xs font-extrabold tracking-wide text-slate-900 dark:text-white sm:text-sm">
                   {t.app.name}
                 </span>
                 {activeWorkspace && (
-                  <span className="hidden truncate rounded-full bg-blue-500/15 px-2 py-0.5 text-[10px] font-semibold text-blue-700 dark:text-sky-300 md:inline">
+                  <span className="hidden truncate rounded-full bg-slate-900/10 px-2 py-0.5 text-[10px] font-semibold text-slate-700 dark:bg-white/10 dark:text-zinc-200 md:inline">
                     {activeWorkspace.name}
                   </span>
                 )}
               </div>
-              <p className="hidden text-[11px] text-slate-600 dark:text-slate-300 xl:block">
+              <p className="hidden text-[11px] text-slate-500 dark:text-zinc-400 xl:block">
                 {t.app.tagline}
               </p>
             </div>
@@ -160,8 +175,8 @@ export function AppLayout({ children }: { children: ReactNode }) {
                     className={cn(
                       'relative inline-flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs font-semibold transition-colors',
                       isActive
-                        ? 'text-blue-700 dark:text-white'
-                        : 'text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white',
+                        ? 'text-white dark:text-slate-950'
+                        : 'text-slate-600 hover:text-slate-900 dark:text-zinc-300 dark:hover:text-white',
                     )}
                   >
                     {isActive && (
@@ -187,11 +202,11 @@ export function AppLayout({ children }: { children: ReactNode }) {
       </header>
 
       {/* Main Content with bottom clearance for the floating 4-tab Liquid Glass dock */}
-      <main className="relative z-10 mx-auto flex w-full max-w-6xl flex-1 flex-col px-3 pb-28 pt-4 sm:px-4 sm:py-7 lg:pb-10">
+      <main className="relative z-10 mx-auto flex w-full max-w-6xl flex-1 flex-col px-3 pb-28 pt-3.5 sm:px-4 sm:py-6 lg:pb-10">
         {children}
       </main>
 
-      {/* Liquid Glass Floating "Menyu" Drawer Sheet (Mobile) */}
+      {/* Perfectly Centered Liquid Glass Floating "Menyu" Drawer Sheet (Mobile) */}
       <AnimatePresence>
         {status === 'authenticated' && menuOpen && (
           <>
@@ -200,27 +215,28 @@ export function AppLayout({ children }: { children: ReactNode }) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
+              transition={{ duration: 0.18 }}
               onClick={() => setMenuOpen(false)}
-              className="fixed inset-0 z-30 bg-slate-950/35 backdrop-blur-sm lg:hidden"
+              className="fixed inset-0 z-30 bg-black/55 backdrop-blur-sm lg:hidden"
             />
 
             <motion.div
               key="finora-menu-sheet"
-              initial={{ opacity: 0, y: 28, scale: 0.92 }}
+              initial={{ opacity: 0, y: 24, scale: 0.94 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 20, scale: 0.94 }}
+              exit={{ opacity: 0, y: 16, scale: 0.96 }}
               transition={DOCK_LENS_SPRING}
-              className="fixed bottom-[5.4rem] left-1/2 z-40 w-[calc(100%-1.5rem)] max-w-md -translate-x-1/2 lg:hidden"
+              className="fixed inset-x-3 bottom-[5.25rem] z-40 mx-auto max-w-md lg:hidden"
             >
-              <div className="liquid-glass-dock rounded-[30px] p-3.5">
+              <div className="liquid-glass-dock rounded-[26px] p-3">
+                <div className="mx-auto mb-2 h-1 w-9 rounded-full bg-slate-400/45 dark:bg-white/20" />
                 <div className="mb-2.5 flex items-center justify-between px-1.5">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">
+                  <div className="flex min-w-0 items-center gap-2">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-zinc-300">
                       {t.nav.more}
                     </span>
                     {activeWorkspace && (
-                      <span className="rounded-full bg-blue-500/15 px-2 py-0.5 text-[10px] font-semibold text-blue-700 dark:text-sky-300">
+                      <span className="truncate rounded-full bg-slate-900/10 px-2 py-0.5 text-[10px] font-semibold text-slate-700 dark:bg-white/10 dark:text-zinc-200">
                         {activeWorkspace.name}
                       </span>
                     )}
@@ -233,21 +249,21 @@ export function AppLayout({ children }: { children: ReactNode }) {
                       triggerHaptic('light');
                       setMenuOpen(false);
                     }}
-                    className="liquid-glass-pill flex h-7 w-7 items-center justify-center rounded-full text-slate-700 dark:text-slate-200"
+                    className="liquid-glass-pill flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-slate-700 dark:text-zinc-200"
                     aria-label={t.common.close}
                   >
                     <X className="h-3.5 w-3.5" />
                   </motion.button>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2.5">
-                  {secondaryMenuItems.map(({ to, label, icon: Icon, accent }) => {
+                <div className="grid grid-cols-2 gap-2">
+                  {secondaryMenuItems.map(({ to, label, icon: Icon, iconTone }) => {
                     const isCurrent = location.pathname.startsWith(to);
                     return (
                       <motion.button
                         key={to}
                         type="button"
-                        whileTap={{ scaleX: 1.045, scaleY: 0.92 }}
+                        whileTap={{ scaleX: 1.04, scaleY: 0.93 }}
                         transition={LIQUID_TAP_SPRING}
                         onClick={() => {
                           triggerHaptic('selection');
@@ -255,16 +271,18 @@ export function AppLayout({ children }: { children: ReactNode }) {
                           navigate(to);
                         }}
                         className={cn(
-                          'liquid-btn-glare relative flex items-center gap-2.5 rounded-2xl px-3.5 py-3 text-left transition-all',
+                          'liquid-btn-glare relative flex items-center gap-2.5 rounded-2xl px-3 py-2.5 text-left transition-all',
                           isCurrent
-                            ? 'liquid-glass-lens text-blue-800 dark:text-white'
-                            : 'liquid-glass-pill text-slate-800 hover:brightness-105 dark:text-slate-100',
+                            ? 'liquid-glass-lens text-white dark:text-slate-950'
+                            : 'liquid-glass-pill text-slate-800 hover:brightness-105 dark:text-zinc-100',
                         )}
                       >
                         <span
                           className={cn(
-                            'flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br text-white shadow-[0_6px_14px_-4px_rgba(15,23,42,0.35),inset_0_1px_1px_rgba(255,255,255,0.55)]',
-                            accent,
+                            'flex h-8 w-8 shrink-0 items-center justify-center rounded-xl',
+                            isCurrent
+                              ? 'bg-white/20 text-white dark:bg-slate-950/15 dark:text-slate-950'
+                              : iconTone,
                           )}
                         >
                           <Icon className="h-4 w-4" />
@@ -284,7 +302,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
       {status === 'authenticated' && (
         <nav
           aria-label="Primary mobile navigation"
-          className="fixed bottom-3 left-1/2 z-40 w-[calc(100%-1.5rem)] max-w-md -translate-x-1/2 lg:hidden"
+          className="fixed inset-x-3 bottom-3 z-40 mx-auto max-w-md lg:hidden"
         >
           <div className="liquid-glass-dock grid grid-cols-4 items-center gap-1 rounded-full p-1.5">
             {primaryMobileTabs.map(({ id, to, label, icon: Icon }) => {
@@ -302,10 +320,10 @@ export function AppLayout({ children }: { children: ReactNode }) {
                   }}
                   aria-current={isActive ? 'page' : undefined}
                   className={cn(
-                    'relative flex min-w-0 flex-col items-center justify-center gap-0.5 rounded-full px-2 py-2 text-[11px] font-bold transition-colors',
+                    'relative flex min-w-0 flex-col items-center justify-center gap-0.5 rounded-full px-1.5 py-1.5 text-[11px] font-bold transition-colors',
                     isActive
-                      ? 'text-blue-700 dark:text-white'
-                      : 'text-slate-600 dark:text-slate-300',
+                      ? 'text-white dark:text-slate-950'
+                      : 'text-slate-600 dark:text-zinc-400',
                   )}
                 >
                   {isActive && (
@@ -316,7 +334,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
                     />
                   )}
                   <motion.span
-                    animate={{ scale: isActive ? 1.12 : 1, y: isActive ? -1 : 0 }}
+                    animate={{ scale: isActive ? 1.08 : 1, y: isActive ? -0.5 : 0 }}
                     transition={LIQUID_TAP_SPRING}
                     className="relative z-10"
                   >
@@ -329,7 +347,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
               );
             })}
 
-            {/* 4th Tab: Menyu (opens Liquid Glass Sheet with remaining sections) */}
+            {/* 4th Tab: Menyu */}
             <motion.button
               type="button"
               whileTap={{ scaleX: 1.08, scaleY: 0.88 }}
@@ -340,10 +358,10 @@ export function AppLayout({ children }: { children: ReactNode }) {
               }}
               aria-expanded={menuOpen}
               className={cn(
-                'relative flex min-w-0 flex-col items-center justify-center gap-0.5 rounded-full px-2 py-2 text-[11px] font-bold transition-colors',
+                'relative flex min-w-0 flex-col items-center justify-center gap-0.5 rounded-full px-1.5 py-1.5 text-[11px] font-bold transition-colors',
                 activeMobileTabId === 'more'
-                  ? 'text-blue-700 dark:text-white'
-                  : 'text-slate-600 dark:text-slate-300',
+                  ? 'text-white dark:text-slate-950'
+                  : 'text-slate-600 dark:text-zinc-400',
               )}
             >
               {activeMobileTabId === 'more' && (
@@ -355,9 +373,9 @@ export function AppLayout({ children }: { children: ReactNode }) {
               )}
               <motion.span
                 animate={{
-                  scale: activeMobileTabId === 'more' ? 1.12 : 1,
+                  scale: activeMobileTabId === 'more' ? 1.08 : 1,
                   rotate: menuOpen ? 90 : 0,
-                  y: activeMobileTabId === 'more' ? -1 : 0,
+                  y: activeMobileTabId === 'more' ? -0.5 : 0,
                 }}
                 transition={LIQUID_TAP_SPRING}
                 className="relative z-10"

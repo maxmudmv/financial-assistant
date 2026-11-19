@@ -49,8 +49,8 @@ export function LanguageSwitcher({
             className={cn(
               'relative rounded-full px-2 py-1 text-[11px] font-bold transition-colors sm:px-2.5 sm:text-xs',
               active
-                ? 'text-blue-700 dark:text-white'
-                : 'text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white',
+                ? 'text-white dark:text-slate-950'
+                : 'text-slate-600 hover:text-slate-900 dark:text-zinc-300 dark:hover:text-white',
             )}
           >
             {active && (

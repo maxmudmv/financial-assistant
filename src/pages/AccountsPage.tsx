@@ -21,6 +21,7 @@ import {
 import { GlassBadge } from '@/components/glass/GlassBadge';
 import { GlassButton } from '@/components/glass/GlassButton';
 import { GlassCard } from '@/components/glass/GlassCard';
+import { GlassSelect } from '@/components/glass/GlassSelect';
 import { useAuth } from '@/contexts/AuthContext';
 import { useI18n } from '@/i18n/I18nContext';
 import { formatDateTime, formatMoney } from '@/i18n/formatters';
@@ -465,36 +466,38 @@ export function AccountsPage() {
 
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-slate-300">
+                      <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-zinc-300">
                         {t.accounts.typeLabel}
                       </label>
-                      <select
-                        {...form.register('type')}
-                        className="w-full rounded-xl border border-slate-300/50 bg-white/70 px-3 py-2 text-sm text-slate-900 outline-none focus:border-blue-500 dark:border-white/15 dark:bg-slate-900/60 dark:text-white"
-                      >
-                        {ACCOUNT_TYPES.map((typeKey) => (
-                          <option key={typeKey} value={typeKey}>
-                            {t.accounts.types[typeKey]}
-                          </option>
-                        ))}
-                      </select>
+                      <GlassSelect
+                        label={t.accounts.typeLabel}
+                        value={form.watch('type')}
+                        onChange={(val) =>
+                          form.setValue('type', val as AccountType, { shouldValidate: true })
+                        }
+                        options={ACCOUNT_TYPES.map((typeKey) => ({
+                          value: typeKey,
+                          label: t.accounts.types[typeKey],
+                        }))}
+                      />
                     </div>
 
                     <div>
-                      <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-slate-300">
+                      <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-zinc-300">
                         {t.accounts.currencyLabel}
                       </label>
-                      <select
-                        {...form.register('currency')}
+                      <GlassSelect
+                        label={t.accounts.currencyLabel}
                         disabled={Boolean(editingAccount)}
-                        className="w-full rounded-xl border border-slate-300/50 bg-white/70 px-3 py-2 text-sm text-slate-900 outline-none focus:border-blue-500 disabled:opacity-60 dark:border-white/15 dark:bg-slate-900/60 dark:text-white"
-                      >
-                        {CURRENCY_OPTIONS.map((curr) => (
-                          <option key={curr} value={curr}>
-                            {curr}
-                          </option>
-                        ))}
-                      </select>
+                        value={form.watch('currency')}
+                        onChange={(val) =>
+                          form.setValue('currency', val, { shouldValidate: true })
+                        }
+                        options={CURRENCY_OPTIONS.map((curr) => ({
+                          value: curr,
+                          label: curr,
+                        }))}
+                      />
                     </div>
                   </div>
 
@@ -512,19 +515,22 @@ export function AccountsPage() {
                   )}
 
                   <div>
-                    <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-slate-300">
+                    <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-zinc-300">
                       {t.accounts.visibilityLabel}
                     </label>
-                    <select
-                      {...form.register('visibility')}
-                      className="w-full rounded-xl border border-slate-300/50 bg-white/70 px-3 py-2 text-sm text-slate-900 outline-none focus:border-blue-500 dark:border-white/15 dark:bg-slate-900/60 dark:text-white"
-                    >
-                      {(['workspace', 'private'] as AccountVisibility[]).map((vis) => (
-                        <option key={vis} value={vis}>
-                          {t.accounts.visibility[vis]}
-                        </option>
-                      ))}
-                    </select>
+                    <GlassSelect
+                      label={t.accounts.visibilityLabel}
+                      value={form.watch('visibility')}
+                      onChange={(val) =>
+                        form.setValue('visibility', val as AccountVisibility, {
+                          shouldValidate: true,
+                        })
+                      }
+                      options={(['workspace', 'private'] as AccountVisibility[]).map((vis) => ({
+                        value: vis,
+                        label: t.accounts.visibility[vis],
+                      }))}
+                    />
                   </div>
 
                   <label className="flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">

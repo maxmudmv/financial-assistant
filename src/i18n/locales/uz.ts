@@ -9,7 +9,7 @@ export const uz: TranslationDictionary = {
   nav: {
     dashboard: 'Asosiy',
     accounts: 'Hisoblar',
-    transactions: 'Tranzaksiyalar',
+    transactions: 'Amallar',
     analytics: 'Tahlil',
     planning: 'Reja',
     reports: 'Hisobotlar',

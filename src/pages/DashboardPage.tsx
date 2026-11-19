@@ -75,10 +75,12 @@ export function DashboardPage() {
       {/* Top Workspace Switcher + Notifications */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+          <h1 className="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-2xl">
             {t.dashboard.title}
           </h1>
-          <p className="text-sm text-slate-600 dark:text-slate-300">{t.dashboard.subtitle}</p>
+          <p className="text-xs text-slate-600 dark:text-zinc-400 sm:text-sm">
+            {t.dashboard.subtitle}
+          </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
@@ -95,8 +97,8 @@ export function DashboardPage() {
                     className={cn(
                       'inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold transition',
                       active
-                        ? 'bg-gradient-to-r from-blue-500 to-violet-600 text-white shadow-sm'
-                        : 'text-slate-600 dark:text-slate-300',
+                        ? 'liquid-glass-lens text-white dark:text-slate-950'
+                        : 'text-slate-600 dark:text-zinc-300',
                     )}
                   >
                     <Icon className="h-3.5 w-3.5" />
@@ -183,10 +185,10 @@ export function DashboardPage() {
               type="button"
               onClick={() => setPeriod(p)}
               className={cn(
-                'rounded-xl px-3 py-1.5 text-xs font-semibold transition',
+                'rounded-xl px-2.5 py-1 text-xs font-semibold transition',
                 period === p
-                  ? 'bg-blue-500 text-white shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white',
+                  ? 'liquid-glass-lens text-white dark:text-slate-950'
+                  : 'text-slate-600 hover:text-slate-900 dark:text-zinc-300 dark:hover:text-white',
               )}
             >
               {t.dashboard.periods[p]}
@@ -224,13 +226,13 @@ export function DashboardPage() {
             animate={{ opacity: 1, y: 0 }}
             className="grid gap-4 lg:grid-cols-3"
           >
-            <GlassCard className="lg:col-span-2 bg-gradient-to-br from-blue-500/15 via-violet-500/10 to-emerald-500/10">
-              <div className="flex flex-wrap items-start justify-between gap-4">
+            <GlassCard className="lg:col-span-2">
+              <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                  <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
                     {t.accounts.totalBalance} ({currency})
                   </p>
-                  <p className="mt-2 font-mono text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
+                  <p className="mt-1.5 font-mono text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-3xl">
                     {mask(formatMoney(data.kpis.totalBalance, currency, language))}
                   </p>
                 </div>
@@ -240,9 +242,9 @@ export function DashboardPage() {
                 </GlassBadge>
               </div>
 
-              <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-                <div className="rounded-2xl border border-white/15 bg-white/30 p-3 dark:bg-white/[0.04]">
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
+              <div className="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+                <div className="rounded-2xl border border-slate-200/80 bg-slate-900/[0.03] p-3 dark:border-white/[0.09] dark:bg-white/[0.04]">
+                  <p className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
                     {t.dashboard.income}
                   </p>
                   <p className="mt-1 font-mono text-sm font-extrabold text-emerald-600 dark:text-emerald-400">
@@ -250,26 +252,26 @@ export function DashboardPage() {
                   </p>
                 </div>
 
-                <div className="rounded-2xl border border-white/15 bg-white/30 p-3 dark:bg-white/[0.04]">
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                <div className="rounded-2xl border border-slate-200/80 bg-slate-900/[0.03] p-3 dark:border-white/[0.09] dark:bg-white/[0.04]">
+                  <p className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
                     {t.dashboard.expenses}
                   </p>
-                  <p className="mt-1 font-mono text-sm font-extrabold text-rose-500">
+                  <p className="mt-1 font-mono text-sm font-extrabold text-rose-600 dark:text-rose-400">
                     −{mask(formatMoney(data.kpis.totalExpenses, currency, language))}
                   </p>
                 </div>
 
-                <div className="rounded-2xl border border-white/15 bg-white/30 p-3 dark:bg-white/[0.04]">
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                <div className="rounded-2xl border border-slate-200/80 bg-slate-900/[0.03] p-3 dark:border-white/[0.09] dark:bg-white/[0.04]">
+                  <p className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
                     {t.dashboard.cashFlow}
                   </p>
-                  <p className="mt-1 font-mono text-sm font-extrabold text-blue-600 dark:text-blue-400">
+                  <p className="mt-1 font-mono text-sm font-extrabold text-sky-600 dark:text-sky-400">
                     {mask(formatMoney(data.kpis.netCashFlow, currency, language))}
                   </p>
                 </div>
 
-                <div className="rounded-2xl border border-white/15 bg-white/30 p-3 dark:bg-white/[0.04]">
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                <div className="rounded-2xl border border-slate-200/80 bg-slate-900/[0.03] p-3 dark:border-white/[0.09] dark:bg-white/[0.04]">
+                  <p className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
                     {t.dashboard.savings}
                   </p>
                   <p className="mt-1 font-mono text-sm font-extrabold text-violet-600 dark:text-violet-400">

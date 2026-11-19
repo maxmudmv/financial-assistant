@@ -52,8 +52,8 @@ export function ThemeToggle({
             className={cn(
               'relative rounded-full p-1.5 transition-colors',
               active
-                ? 'text-blue-700 dark:text-white'
-                : 'text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white',
+                ? 'text-white dark:text-slate-950'
+                : 'text-slate-600 hover:text-slate-900 dark:text-zinc-300 dark:hover:text-white',
             )}
           >
             {active && (
