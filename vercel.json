@@ -1,0 +1,131 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "vite",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "functions": {
+    "api/**/*.ts": {
+      "maxDuration": 10
+    }
+  },
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=(), payment=()"
+        },
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=63072000; includeSubDomains; preload"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self' https://telegram.org; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; connect-src 'self'; frame-ancestors 'self' https://web.telegram.org https://*.telegram.org;"
+        }
+      ]
+    },
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, no-cache, must-revalidate, private"
+        }
+      ]
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/recurring/cron",
+      "schedule": "0 6 * * *"
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/auth/:action",
+      "destination": "/api/auth?action=:action"
+    },
+    {
+      "source": "/api/accounts/:sub",
+      "destination": "/api/accounts?sub=:sub"
+    },
+    {
+      "source": "/api/transactions/:sub/:action",
+      "destination": "/api/transactions?sub=:sub&action=:action"
+    },
+    {
+      "source": "/api/transactions/:sub",
+      "destination": "/api/transactions?sub=:sub"
+    },
+    {
+      "source": "/api/transfers/:sub/:action",
+      "destination": "/api/transfers?sub=:sub&action=:action"
+    },
+    {
+      "source": "/api/transfers/:sub",
+      "destination": "/api/transfers?sub=:sub"
+    },
+    {
+      "source": "/api/budgets/:sub",
+      "destination": "/api/budgets?sub=:sub"
+    },
+    {
+      "source": "/api/goals/:sub/:action",
+      "destination": "/api/goals?sub=:sub&action=:action"
+    },
+    {
+      "source": "/api/goals/:sub",
+      "destination": "/api/goals?sub=:sub"
+    },
+    {
+      "source": "/api/debts/:sub/:action",
+      "destination": "/api/debts?sub=:sub&action=:action"
+    },
+    {
+      "source": "/api/debts/:sub",
+      "destination": "/api/debts?sub=:sub"
+    },
+    {
+      "source": "/api/recurring/cron",
+      "destination": "/api/recurring?action=cron"
+    },
+    {
+      "source": "/api/recurring/:sub/:action",
+      "destination": "/api/recurring?sub=:sub&action=:action"
+    },
+    {
+      "source": "/api/workspaces/:sub/:action",
+      "destination": "/api/workspaces?sub=:sub&action=:action"
+    },
+    {
+      "source": "/api/workspaces/:sub",
+      "destination": "/api/workspaces?sub=:sub"
+    },
+    {
+      "source": "/api/reports/:sub",
+      "destination": "/api/reports?domain=reports&sub=:sub"
+    },
+    {
+      "source": "/api/notifications/:sub",
+      "destination": "/api/reports?domain=notifications&sub=:sub"
+    },
+    {
+      "source": "/api/notifications",
+      "destination": "/api/reports?domain=notifications&sub=list"
+    },
+    {
+      "source": "/((?!api/).*)",
+      "destination": "/index.html"
+    }
+  ]
+}
