@@ -21,6 +21,7 @@ import { ThemeToggle } from '@/components/glass/ThemeToggle';
 import { useAuth } from '@/contexts/AuthContext';
 import { useI18n } from '@/i18n/I18nContext';
 import { cn } from '@/lib/cn';
+import { startLiquidGlassPhysics } from '@/lib/liquidGlassPhysics';
 import { triggerHaptic } from '@/lib/telegram';
 
 const DOCK_LENS_SPRING = {
@@ -50,6 +51,11 @@ export function AppLayout({ children }: { children: ReactNode }) {
   useEffect(() => {
     setMenuOpen(false);
   }, [location.pathname]);
+
+  // Run organic gyroscope/scroll/touch liquid glass border light physics
+  useEffect(() => {
+    return startLiquidGlassPhysics();
+  }, []);
 
   const desktopNav = [
     { to: '/', label: t.nav.dashboard, icon: LayoutDashboard },
