@@ -98,7 +98,7 @@ export function DashboardPage() {
                     className={cn(
                       'inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold transition',
                       active
-                        ? 'liquid-glass-lens text-white dark:text-slate-950'
+                        ? 'liquid-glass-lens text-slate-950 dark:text-white'
                         : 'text-slate-600 dark:text-zinc-300',
                     )}
                   >
@@ -188,7 +188,7 @@ export function DashboardPage() {
               className={cn(
                 'shrink-0 whitespace-nowrap rounded-full px-2.5 py-1 text-[11px] font-semibold transition',
                 period === p
-                  ? 'liquid-glass-lens text-white dark:text-slate-950'
+                  ? 'liquid-glass-lens text-slate-950 dark:text-white'
                   : 'text-slate-600 hover:text-slate-900 dark:text-zinc-300 dark:hover:text-white',
               )}
             >

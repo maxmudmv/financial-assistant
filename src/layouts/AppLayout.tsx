@@ -180,7 +180,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
                     className={cn(
                       'relative inline-flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs font-semibold transition-colors',
                       isActive
-                        ? 'text-white dark:text-slate-950'
+                        ? 'text-slate-950 dark:text-white'
                         : 'text-slate-600 hover:text-slate-900 dark:text-zinc-300 dark:hover:text-white',
                     )}
                   >
@@ -328,7 +328,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
                         className={cn(
                           'liquid-btn-glare relative flex items-center gap-2.5 rounded-2xl px-3 py-2.5 text-left transition-all',
                           isCurrent
-                            ? 'liquid-glass-lens text-white dark:text-slate-950'
+                            ? 'liquid-glass-lens text-slate-950 dark:text-white'
                             : 'liquid-glass-pill text-slate-800 hover:brightness-105 dark:text-zinc-100',
                         )}
                       >
@@ -336,7 +336,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
                           className={cn(
                             'flex h-8 w-8 shrink-0 items-center justify-center rounded-xl',
                             isCurrent
-                              ? 'bg-white/20 text-white dark:bg-slate-950/15 dark:text-slate-950'
+                              ? 'bg-slate-900/10 text-slate-900 dark:bg-white/15 dark:text-white'
                               : iconTone,
                           )}
                         >
@@ -377,7 +377,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
                   className={cn(
                     'relative flex min-w-0 flex-col items-center justify-center gap-0.5 rounded-full px-1.5 py-1.5 text-[11px] font-bold transition-colors',
                     isActive
-                      ? 'text-white dark:text-slate-950'
+                      ? 'text-slate-950 dark:text-white'
                       : 'text-slate-600 dark:text-zinc-400',
                   )}
                 >
@@ -415,7 +415,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
               className={cn(
                 'relative flex min-w-0 flex-col items-center justify-center gap-0.5 rounded-full px-1.5 py-1.5 text-[11px] font-bold transition-colors',
                 activeMobileTabId === 'more'
-                  ? 'text-white dark:text-slate-950'
+                  ? 'text-slate-950 dark:text-white'
                   : 'text-slate-600 dark:text-zinc-400',
               )}
             >

@@ -16,18 +16,17 @@ interface GlassButtonProps extends SafeButtonAttributes {
 
 const VARIANT_CLASSES = {
   primary: 'liquid-glass-btn-primary hover:brightness-110',
-  secondary:
-    'liquid-glass-pill text-slate-900 dark:text-slate-100 hover:border-white/70 dark:hover:border-white/40',
+  secondary: 'liquid-glass-btn-secondary hover:brightness-110',
   ghost:
-    'bg-transparent text-slate-700 dark:text-slate-200 hover:bg-white/25 dark:hover:bg-white/10',
+    'liquid-glass-btn-secondary opacity-90 hover:opacity-100',
   danger:
-    'bg-rose-500/18 border border-rose-400/45 text-rose-600 dark:text-rose-200 shadow-[inset_0_1px_1px_rgba(255,255,255,0.35)] hover:bg-rose-500/28',
+    'bg-rose-500/15 border border-rose-400/50 text-rose-600 dark:text-rose-200 shadow-[inset_0_1px_1px_rgba(255,255,255,0.35)] hover:bg-rose-500/25',
 };
 
 const SIZE_CLASSES = {
   sm: 'px-3.5 py-1.5 text-xs rounded-full',
-  md: 'px-4 py-2.5 text-sm rounded-2xl',
-  lg: 'px-5 py-3.5 text-sm font-semibold rounded-2xl',
+  md: 'px-4 py-2.5 text-sm rounded-full',
+  lg: 'px-5 py-3 text-sm font-semibold rounded-full',
 };
 
 const LIQUID_SPRING = {

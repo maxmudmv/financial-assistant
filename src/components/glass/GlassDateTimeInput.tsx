@@ -90,7 +90,7 @@ export function GlassDateTimeInput({
                 className={cn(
                   'rounded-full px-2 py-0.5 text-[10px] font-bold transition-colors',
                   active
-                    ? 'liquid-glass-lens text-white dark:text-slate-950'
+                    ? 'liquid-glass-lens text-slate-950 dark:text-white'
                     : 'liquid-glass-pill text-slate-600 hover:text-slate-900 dark:text-zinc-300 dark:hover:text-white',
                 )}
               >

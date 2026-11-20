@@ -71,7 +71,7 @@ export function AnalyticsPage() {
                 className={cn(
                   'shrink-0 whitespace-nowrap rounded-full px-2.5 py-1 text-[11px] font-semibold transition',
                   period === p
-                    ? 'liquid-glass-lens text-white dark:text-slate-950'
+                    ? 'liquid-glass-lens text-slate-950 dark:text-white'
                     : 'text-slate-600 hover:text-slate-900 dark:text-zinc-300 dark:hover:text-white',
                 )}
               >

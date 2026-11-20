@@ -401,7 +401,7 @@ export function PlanningPage() {
               className={cn(
                 'inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1 text-[11px] font-semibold transition',
                 tab === key
-                  ? 'liquid-glass-lens text-white dark:text-slate-950'
+                  ? 'liquid-glass-lens text-slate-950 dark:text-white'
                   : 'text-slate-600 hover:text-slate-900 dark:text-zinc-300 dark:hover:text-white',
               )}
             >
