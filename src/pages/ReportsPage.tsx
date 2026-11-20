@@ -10,6 +10,7 @@ import { formatMoney } from '@/i18n/formatters';
 import { downloadReportExport, fetchReportsSummary } from '@/services/planningService';
 import type { AnalyticsPeriod, ReportType } from '@/types/planning';
 import { cn } from '@/lib/cn';
+import { triggerHaptic } from '@/lib/telegram';
 
 const REPORT_TYPES: ReportType[] = [
   'daily',
@@ -28,12 +29,13 @@ export function ReportsPage() {
   const { language, t } = useI18n();
   const workspaceId = activeWorkspace?.id ?? '';
 
-  const [reportType, setReportType] = useState<ReportType>('monthly');
-  const [period, setPeriod] = useState<AnalyticsPeriod>('year');
+  const [reportType, setReportType] = useState<ReportType>('daily');
+  const [period, setPeriod] = useState<AnalyticsPeriod>('today');
   const [customFrom, setCustomFrom] = useState('');
   const [customTo, setCustomTo] = useState('');
   const [exportingFormat, setExportingFormat] = useState<'pdf' | 'xlsx' | 'csv' | null>(null);
   const [exportError, setExportError] = useState<string | null>(null);
+  const [exportSuccess, setExportSuccess] = useState<string | null>(null);
 
   const fromIso = period === 'custom' && customFrom ? `${customFrom}T00:00:00.000Z` : undefined;
   const toIso = period === 'custom' && customTo ? `${customTo}T23:59:59.999Z` : undefined;
@@ -53,16 +55,22 @@ export function ReportsPage() {
 
   const handleExport = async (format: 'pdf' | 'xlsx' | 'csv') => {
     setExportError(null);
+    setExportSuccess(null);
     setExportingFormat(format);
     try {
-      await downloadReportExport(workspaceId, {
+      const mode = await downloadReportExport(workspaceId, {
         reportType,
         period,
         format,
         from: fromIso,
         to: toIso,
       });
+      triggerHaptic('success');
+      if (mode === 'telegram') {
+        setExportSuccess(t.reports.sentToTelegram);
+      }
     } catch (err) {
+      triggerHaptic('error');
       setExportError(err instanceof Error ? err.message : t.errors.unexpected);
     } finally {
       setExportingFormat(null);
@@ -127,16 +135,22 @@ export function ReportsPage() {
         </GlassCard>
       )}
 
-      {/* Report Type Selector (All 7 Required Types) */}
-      <div className="flex flex-wrap items-center justify-between gap-2.5">
-        <div className="liquid-glass-pill inline-flex flex-wrap gap-1 rounded-2xl p-1">
+      {exportSuccess && (
+        <GlassCard padding="sm">
+          <p className="text-xs font-semibold text-emerald-500">{exportSuccess}</p>
+        </GlassCard>
+      )}
+
+      {/* Compact Single-Row Report Type & Period Selectors */}
+      <div className="flex flex-col gap-2">
+        <div className="liquid-glass-pill no-scrollbar flex w-full flex-nowrap items-center gap-1 overflow-x-auto rounded-full p-1 sm:w-fit">
           {REPORT_TYPES.map((rt) => (
             <button
               key={rt}
               type="button"
               onClick={() => setReportType(rt)}
               className={cn(
-                'rounded-xl px-2.5 py-1 text-xs font-semibold transition',
+                'shrink-0 whitespace-nowrap rounded-full px-2.5 py-1 text-[11px] font-semibold transition',
                 reportType === rt
                   ? 'liquid-glass-lens text-white dark:text-slate-950'
                   : 'text-slate-600 hover:text-slate-900 dark:text-zinc-300 dark:hover:text-white',
@@ -147,14 +161,14 @@ export function ReportsPage() {
           ))}
         </div>
 
-        <div className="liquid-glass-pill inline-flex flex-wrap gap-1 rounded-2xl p-1">
+        <div className="liquid-glass-pill no-scrollbar flex w-full flex-nowrap items-center gap-1 overflow-x-auto rounded-full p-1 sm:w-fit">
           {PERIODS.map((p) => (
             <button
               key={p}
               type="button"
               onClick={() => setPeriod(p)}
               className={cn(
-                'rounded-xl px-2.5 py-1 text-xs font-semibold transition',
+                'shrink-0 whitespace-nowrap rounded-full px-2.5 py-1 text-[11px] font-semibold transition',
                 period === p
                   ? 'liquid-glass-lens text-white dark:text-slate-950'
                   : 'text-slate-600 hover:text-slate-900 dark:text-zinc-300 dark:hover:text-white',

@@ -414,9 +414,11 @@ export function SettingsPage() {
             size="sm"
             onClick={() =>
               void downloadReportExport(workspaceId, {
-                reportType: 'monthly',
-                period: 'year',
+                reportType: 'daily',
+                period: 'today',
                 format: 'pdf',
+              }).then((mode) => {
+                if (mode === 'telegram') setStatusMessage(t.reports.sentToTelegram);
               })
             }
           >
@@ -428,9 +430,11 @@ export function SettingsPage() {
             size="sm"
             onClick={() =>
               void downloadReportExport(workspaceId, {
-                reportType: 'monthly',
-                period: 'year',
+                reportType: 'daily',
+                period: 'today',
                 format: 'xlsx',
+              }).then((mode) => {
+                if (mode === 'telegram') setStatusMessage(t.reports.sentToTelegram);
               })
             }
           >
@@ -442,9 +446,11 @@ export function SettingsPage() {
             size="sm"
             onClick={() =>
               void downloadReportExport(workspaceId, {
-                reportType: 'monthly',
-                period: 'year',
+                reportType: 'daily',
+                period: 'today',
                 format: 'csv',
+              }).then((mode) => {
+                if (mode === 'telegram') setStatusMessage(t.reports.sentToTelegram);
               })
             }
           >

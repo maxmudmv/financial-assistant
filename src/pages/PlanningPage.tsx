@@ -392,14 +392,14 @@ export function PlanningPage() {
           </p>
         </div>
 
-        <div className="liquid-glass-pill inline-flex flex-wrap gap-1 rounded-2xl p-1">
+        <div className="liquid-glass-pill no-scrollbar flex w-full flex-nowrap items-center gap-1 overflow-x-auto rounded-full p-1 sm:w-fit">
           {TABS.map(({ key, label, icon: Icon }) => (
             <button
               key={key}
               type="button"
               onClick={() => setTab(key)}
               className={cn(
-                'inline-flex items-center gap-1.5 rounded-xl px-2.5 py-1 text-xs font-semibold transition',
+                'inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1 text-[11px] font-semibold transition',
                 tab === key
                   ? 'liquid-glass-lens text-white dark:text-slate-950'
                   : 'text-slate-600 hover:text-slate-900 dark:text-zinc-300 dark:hover:text-white',

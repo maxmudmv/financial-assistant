@@ -194,6 +194,7 @@ export async function createTransfer(
     toAmount?: string;
     exchangeRate?: string;
     feeAmount?: string;
+    occurredAt?: string;
     notes?: string;
   },
   idempotencyKey = generateIdempotencyKey(),

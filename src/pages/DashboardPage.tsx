@@ -27,6 +27,7 @@ import {
   markNotificationsRead,
 } from '@/services/planningService';
 import type { AnalyticsPeriod } from '@/types/planning';
+import type { TransactionType } from '@/types/finance';
 import { cn } from '@/lib/cn';
 
 const PERIODS: AnalyticsPeriod[] = ['today', 'week', 'month', 'last_month', 'year', 'custom'];
@@ -37,7 +38,7 @@ export function DashboardPage() {
   const queryClient = useQueryClient();
 
   const workspaceId = activeWorkspace?.id ?? '';
-  const [period, setPeriod] = useState<AnalyticsPeriod>('month');
+  const [period, setPeriod] = useState<AnalyticsPeriod>('today');
   const [customFrom, setCustomFrom] = useState('');
   const [customTo, setCustomTo] = useState('');
   const [showNotifications, setShowNotifications] = useState(false);
@@ -176,16 +177,16 @@ export function DashboardPage() {
         </GlassCard>
       )}
 
-      {/* Period Filter Pills */}
-      <div className="flex flex-wrap items-center gap-2">
-        <div className="liquid-glass-pill inline-flex flex-wrap items-center gap-1 rounded-2xl p-1">
+      {/* Compact Single-Row Period Filter Pills (defaults to Today) */}
+      <div className="flex flex-col gap-2">
+        <div className="liquid-glass-pill no-scrollbar flex w-full flex-nowrap items-center gap-1 overflow-x-auto rounded-full p-1 sm:w-fit">
           {PERIODS.map((p) => (
             <button
               key={p}
               type="button"
               onClick={() => setPeriod(p)}
               className={cn(
-                'rounded-xl px-2.5 py-1 text-xs font-semibold transition',
+                'shrink-0 whitespace-nowrap rounded-full px-2.5 py-1 text-[11px] font-semibold transition',
                 period === p
                   ? 'liquid-glass-lens text-white dark:text-slate-950'
                   : 'text-slate-600 hover:text-slate-900 dark:text-zinc-300 dark:hover:text-white',
@@ -366,7 +367,9 @@ export function DashboardPage() {
                           </div>
                           <div>
                             <p className="text-xs font-bold text-slate-900 dark:text-white">
-                              {tx.description || tx.type}
+                              {tx.description ||
+                                t.transactions.types[tx.type as TransactionType] ||
+                                tx.type}
                             </p>
                             <p className="text-[11px] text-slate-500">
                               {tx.accountName} • {formatDateTime(tx.occurredAt, language)}

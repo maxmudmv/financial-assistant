@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { AnimatePresence, motion } from 'framer-motion';
 import {
   ArrowDownLeft,
   ArrowUpRight,
@@ -13,11 +13,17 @@ import {
   Plus,
   Search,
   Tag,
-  X,
 } from 'lucide-react';
 import { GlassBadge } from '@/components/glass/GlassBadge';
 import { GlassButton } from '@/components/glass/GlassButton';
 import { GlassCard } from '@/components/glass/GlassCard';
+import {
+  GlassDateTimeInput,
+  getNowLocalDateTimeValue,
+  isoToLocalDateTimeValue,
+  localDateTimeValueToIso,
+} from '@/components/glass/GlassDateTimeInput';
+import { GlassModal } from '@/components/glass/GlassModal';
 import { GlassSelect } from '@/components/glass/GlassSelect';
 import { useAuth } from '@/contexts/AuthContext';
 import { useI18n } from '@/i18n/I18nContext';
@@ -55,6 +61,7 @@ const TxFormSchema = z.object({
   ]),
   adjustmentDirection: z.enum(['credit', 'debit']).default('credit'),
   amount: z.string().regex(/^\d+(\.\d{1,4})?$/),
+  occurredAtLocal: z.string().min(10),
   description: z.string().max(240).optional(),
   notes: z.string().max(1000).optional(),
   tagsText: z.string().max(200).optional(),
@@ -67,6 +74,7 @@ export function TransactionsPage() {
   const { activeWorkspace } = useAuth();
   const { language, t } = useI18n();
   const queryClient = useQueryClient();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const workspaceId = activeWorkspace?.id ?? '';
   const canWrite = activeWorkspace?.role !== 'read_only';
@@ -123,6 +131,7 @@ export function TransactionsPage() {
       type: 'expense',
       adjustmentDirection: 'credit',
       amount: '',
+      occurredAtLocal: getNowLocalDateTimeValue(),
       description: '',
       notes: '',
       tagsText: '',
@@ -143,6 +152,8 @@ export function TransactionsPage() {
     void queryClient.invalidateQueries({ queryKey: ['transactions', workspaceId] });
     void queryClient.invalidateQueries({ queryKey: ['accounts', workspaceId] });
     void queryClient.invalidateQueries({ queryKey: ['ledger', workspaceId] });
+    void queryClient.invalidateQueries({ queryKey: ['analytics', workspaceId] });
+    void queryClient.invalidateQueries({ queryKey: ['reports', workspaceId] });
     if (selectedTxId) {
       void queryClient.invalidateQueries({
         queryKey: ['transaction-detail', workspaceId, selectedTxId],
@@ -163,6 +174,7 @@ export function TransactionsPage() {
         type: values.type,
         adjustmentDirection: values.adjustmentDirection,
         amount: values.amount,
+        occurredAt: localDateTimeValueToIso(values.occurredAtLocal),
         description: values.description || undefined,
         notes: values.notes || undefined,
         tags,
@@ -204,6 +216,7 @@ export function TransactionsPage() {
       type: 'expense',
       adjustmentDirection: 'credit',
       amount: '',
+      occurredAtLocal: getNowLocalDateTimeValue(),
       description: '',
       notes: '',
       tagsText: '',
@@ -221,6 +234,7 @@ export function TransactionsPage() {
       type: tx.type === 'transfer' ? 'expense' : tx.type,
       adjustmentDirection: 'credit',
       amount: tx.amount,
+      occurredAtLocal: isoToLocalDateTimeValue(tx.occurredAt),
       description: tx.description ?? '',
       notes: tx.notes ?? '',
       tagsText: (tx.tags ?? []).join(', '),
@@ -231,6 +245,16 @@ export function TransactionsPage() {
 
   const accounts = accountsQuery.data?.accounts ?? [];
   const categories = categoriesQuery.data?.categories ?? [];
+
+  // Open Create Transaction modal automatically when navigated via top header `+` button
+  useEffect(() => {
+    if (searchParams.get('new') === '1' && canWrite && accounts.length > 0 && !modalOpen) {
+      openCreateModal();
+      const next = new URLSearchParams(searchParams);
+      next.delete('new');
+      setSearchParams(next, { replace: true });
+    }
+  }, [searchParams, canWrite, accounts.length]);
 
   return (
     <div className="flex flex-col gap-5 pb-20">
@@ -250,16 +274,32 @@ export function TransactionsPage() {
         )}
       </div>
 
-      {/* Search, Filter & Sort Controls */}
+      {canWrite && !accountsQuery.isLoading && accounts.length === 0 && (
+        <GlassCard padding="sm">
+          <div className="flex flex-wrap items-center justify-between gap-2.5">
+            <p className="text-xs font-medium text-slate-600 dark:text-zinc-300">
+              {t.transactions.noAccountsHint}
+            </p>
+            <Link to="/accounts">
+              <GlassButton size="sm" variant="secondary">
+                <Plus className="h-3.5 w-3.5" />
+                {t.accounts.addAccount}
+              </GlassButton>
+            </Link>
+          </div>
+        </GlassCard>
+      )}
+
+      {/* Compact Search, Filter & Sort Controls */}
       <GlassCard padding="sm">
-        <div className="grid gap-2.5 sm:grid-cols-4">
-          <div className="relative sm:col-span-2">
-            <Search className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          <div className="relative col-span-2">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder={t.transactions.searchPlaceholder}
-              className="w-full rounded-xl border border-slate-300/40 bg-white/60 py-2 pl-9 pr-3 text-xs text-slate-900 outline-none focus:border-blue-500 dark:border-white/10 dark:bg-slate-900/50 dark:text-white"
+              className="liquid-glass-input py-2 pl-9 pr-3 text-xs"
             />
           </div>
 
@@ -294,7 +334,7 @@ export function TransactionsPage() {
               label={t.transactions.accountLabel}
               value={filterAccountId}
               onChange={setFilterAccountId}
-              className="sm:col-span-2"
+              className="col-span-2"
               options={[
                 { value: '', label: `${t.transactions.accountLabel}: ${t.common.all}` },
                 ...accounts.map((acc) => ({
@@ -417,184 +457,144 @@ export function TransactionsPage() {
         </GlassCard>
       )}
 
-      {/* Transaction Detail & Ledger Trail Modal */}
-      <AnimatePresence>
-        {selectedTxId && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-sm"
-          >
-            <motion.div
-              initial={{ scale: 0.96, y: 12 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.96, y: 12 }}
-              className="max-h-[88dvh] w-full max-w-lg overflow-y-auto"
-            >
-              <GlassCard padding="lg">
-                <div className="mb-4 flex items-center justify-between">
-                  <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-                    {t.transactions.detailsTitle}
-                  </h2>
-                  <button
-                    type="button"
-                    onClick={() => setSelectedTxId(null)}
-                    className="rounded-xl p-1 text-slate-400 hover:text-slate-200"
-                  >
-                    <X className="h-5 w-5" />
-                  </button>
-                </div>
-
-                {detailQuery.isLoading ? (
-                  <p className="text-sm text-slate-500">{t.common.loading}</p>
-                ) : detailQuery.data ? (
-                  <div className="flex flex-col gap-4">
-                    <div className="rounded-2xl border border-slate-300/35 bg-slate-900/[0.02] p-4 dark:border-white/10 dark:bg-white/[0.03]">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-slate-500">
-                          {t.transactions.originalAmount}
-                        </span>
-                        <GlassBadge
-                          tone={detailQuery.data.transaction.status === 'voided' ? 'amber' : 'emerald'}
-                        >
-                          {detailQuery.data.transaction.status === 'voided'
-                            ? t.transactions.voidedBadge
-                            : t.transactions.postedBadge}
-                        </GlassBadge>
-                      </div>
-                      <p className="mt-1 font-mono text-2xl font-extrabold text-slate-900 dark:text-white">
-                        {formatMoney(
-                          detailQuery.data.transaction.amount,
-                          detailQuery.data.transaction.currency,
-                          language,
-                        )}
-                      </p>
-                      {detailQuery.data.transaction.reportingAmount &&
-                        detailQuery.data.transaction.reportingCurrency && (
-                          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                            {t.transactions.reportingSnapshot}:{' '}
-                            {formatMoney(
-                              detailQuery.data.transaction.reportingAmount,
-                              detailQuery.data.transaction.reportingCurrency,
-                              language,
-                            )}
-                          </p>
-                        )}
-                      {detailQuery.data.transaction.notes && (
-                        <p className="mt-2 text-xs text-slate-600 dark:text-slate-300">
-                          {detailQuery.data.transaction.notes}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Immutable Ledger Entries for this transaction */}
-                    <div>
-                      <h3 className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-500">
-                        {t.transactions.ledgerTrailTitle}
-                      </h3>
-                      <div className="flex flex-col gap-2">
-                        {detailQuery.data.ledgerEntries.map((le) => (
-                          <div
-                            key={le.id}
-                            className="flex items-center justify-between rounded-xl border border-slate-300/35 px-3 py-2 text-xs dark:border-white/10"
-                          >
-                            <div>
-                              <span className="font-semibold">
-                                {le.direction === 'credit'
-                                  ? t.ledger.directionCredit
-                                  : t.ledger.directionDebit}
-                              </span>
-                              {le.isReversal && (
-                                <GlassBadge tone="amber" className="ml-2">
-                                  {t.ledger.reversalBadge}
-                                </GlassBadge>
-                              )}
-                              <p className="text-[11px] text-slate-500">
-                                {formatDateTime(le.createdAt, language)}
-                              </p>
-                            </div>
-                            <div className="text-right font-mono">
-                              <p className="font-bold">
-                                {le.signedAmount} {le.currency}
-                              </p>
-                              <p className="text-[11px] text-slate-500">
-                                {t.ledger.balanceAfter}: {le.balanceAfter}
-                              </p>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {canWrite &&
-                      detailQuery.data.transaction.status === 'posted' &&
-                      detailQuery.data.transaction.type !== 'transfer' && (
-                        <div className="flex justify-end gap-2 pt-2">
-                          <GlassButton
-                            variant="secondary"
-                            size="sm"
-                            onClick={() => {
-                              const target = detailQuery.data!.transaction;
-                              setSelectedTxId(null);
-                              openEditModal(target);
-                            }}
-                          >
-                            <Pencil className="h-3.5 w-3.5" />
-                            {t.common.edit}
-                          </GlassButton>
-                          <GlassButton
-                            variant="danger"
-                            size="sm"
-                            disabled={voidMutation.isPending}
-                            onClick={() => voidMutation.mutate(detailQuery.data!.transaction.id)}
-                          >
-                            <Ban className="h-3.5 w-3.5" />
-                            {t.transactions.voidTransaction}
-                          </GlassButton>
-                        </div>
-                      )}
-                  </div>
-                ) : null}
-              </GlassCard>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Create / Edit Transaction Modal */}
-      <AnimatePresence>
-        {modalOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-sm"
-          >
-            <motion.div
-              initial={{ scale: 0.96, y: 12 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.96, y: 12 }}
-              className="max-h-[90dvh] w-full max-w-md overflow-y-auto"
-            >
-              <GlassCard padding="lg">
-                <div className="mb-4 flex items-center justify-between">
-                  <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-                    {editingTx ? t.transactions.editTransaction : t.transactions.addTransaction}
-                  </h2>
-                  <button
-                    type="button"
-                    onClick={() => setModalOpen(false)}
-                    className="rounded-xl p-1 text-slate-400 hover:text-slate-200"
-                  >
-                    <X className="h-5 w-5" />
-                  </button>
-                </div>
-
-                <form
-                  onSubmit={form.handleSubmit((vals) => saveMutation.mutate(vals))}
-                  className="flex flex-col gap-3.5"
+      {/* Transaction Detail & Ledger Trail Modal (Portal above header/dock) */}
+      <GlassModal
+        open={Boolean(selectedTxId)}
+        onClose={() => setSelectedTxId(null)}
+        title={t.transactions.detailsTitle}
+        maxWidthClass="max-w-lg"
+      >
+        {detailQuery.isLoading ? (
+          <p className="text-sm text-slate-500">{t.common.loading}</p>
+        ) : detailQuery.data ? (
+          <div className="flex flex-col gap-4">
+            <div className="rounded-2xl border border-slate-300/35 bg-slate-900/[0.02] p-4 dark:border-white/10 dark:bg-white/[0.03]">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-slate-500">{t.transactions.originalAmount}</span>
+                <GlassBadge
+                  tone={detailQuery.data.transaction.status === 'voided' ? 'amber' : 'emerald'}
                 >
+                  {detailQuery.data.transaction.status === 'voided'
+                    ? t.transactions.voidedBadge
+                    : t.transactions.postedBadge}
+                </GlassBadge>
+              </div>
+              <p className="mt-1 font-mono text-2xl font-extrabold text-slate-900 dark:text-white">
+                {formatMoney(
+                  detailQuery.data.transaction.amount,
+                  detailQuery.data.transaction.currency,
+                  language,
+                )}
+              </p>
+              {detailQuery.data.transaction.reportingAmount &&
+                detailQuery.data.transaction.reportingCurrency && (
+                  <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                    {t.transactions.reportingSnapshot}:{' '}
+                    {formatMoney(
+                      detailQuery.data.transaction.reportingAmount,
+                      detailQuery.data.transaction.reportingCurrency,
+                      language,
+                    )}
+                  </p>
+                )}
+              {detailQuery.data.transaction.notes && (
+                <p className="mt-2 text-xs text-slate-600 dark:text-slate-300">
+                  {detailQuery.data.transaction.notes}
+                </p>
+              )}
+            </div>
+
+            {/* Immutable Ledger Entries for this transaction */}
+            <div>
+              <h3 className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-500">
+                {t.transactions.ledgerTrailTitle}
+              </h3>
+              <div className="flex flex-col gap-2">
+                {detailQuery.data.ledgerEntries.map((le) => (
+                  <div
+                    key={le.id}
+                    className="flex items-center justify-between rounded-xl border border-slate-300/35 px-3 py-2 text-xs dark:border-white/10"
+                  >
+                    <div>
+                      <span className="font-semibold">
+                        {le.direction === 'credit'
+                          ? t.ledger.directionCredit
+                          : t.ledger.directionDebit}
+                      </span>
+                      {le.isReversal && (
+                        <GlassBadge tone="amber" className="ml-2">
+                          {t.ledger.reversalBadge}
+                        </GlassBadge>
+                      )}
+                      <p className="text-[11px] text-slate-500">
+                        {formatDateTime(le.createdAt, language)}
+                      </p>
+                    </div>
+                    <div className="text-right font-mono">
+                      <p className="font-bold">
+                        {le.signedAmount} {le.currency}
+                      </p>
+                      <p className="text-[11px] text-slate-500">
+                        {t.ledger.balanceAfter}: {le.balanceAfter}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {canWrite &&
+              detailQuery.data.transaction.status === 'posted' &&
+              detailQuery.data.transaction.type !== 'transfer' && (
+                <div className="flex justify-end gap-2 pt-2">
+                  <GlassButton
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => {
+                      const target = detailQuery.data!.transaction;
+                      setSelectedTxId(null);
+                      openEditModal(target);
+                    }}
+                  >
+                    <Pencil className="h-3.5 w-3.5" />
+                    {t.common.edit}
+                  </GlassButton>
+                  <GlassButton
+                    variant="danger"
+                    size="sm"
+                    disabled={voidMutation.isPending}
+                    onClick={() => voidMutation.mutate(detailQuery.data!.transaction.id)}
+                  >
+                    <Ban className="h-3.5 w-3.5" />
+                    {t.transactions.voidTransaction}
+                  </GlassButton>
+                </div>
+              )}
+          </div>
+        ) : null}
+      </GlassModal>
+
+      {/* Create / Edit Transaction Modal (Portal with sticky action footer) */}
+      <GlassModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title={editingTx ? t.transactions.editTransaction : t.transactions.addTransaction}
+        footer={
+          <div className="flex items-center justify-end gap-2">
+            <GlassButton variant="ghost" onClick={() => setModalOpen(false)}>
+              {t.common.cancel}
+            </GlassButton>
+            <GlassButton type="submit" form="tx-editor-form" disabled={saveMutation.isPending}>
+              {editingTx ? t.common.save : t.common.create}
+            </GlassButton>
+          </div>
+        }
+      >
+        <form
+          id="tx-editor-form"
+          onSubmit={form.handleSubmit((vals) => saveMutation.mutate(vals))}
+          className="flex flex-col gap-3"
+        >
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-zinc-300">
@@ -686,6 +686,14 @@ export function TransactionsPage() {
                     />
                   </div>
 
+                  <GlassDateTimeInput
+                    label={t.transactions.dateLabel}
+                    value={form.watch('occurredAtLocal')}
+                    onChange={(val) =>
+                      form.setValue('occurredAtLocal', val, { shouldValidate: true })
+                    }
+                  />
+
                   <div>
                     <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-slate-300">
                       {t.transactions.descriptionLabel}
@@ -723,22 +731,9 @@ export function TransactionsPage() {
                     {t.transactions.privateLabel}
                   </label>
 
-                  {formError && <p className="text-xs text-rose-500">{formError}</p>}
-
-                  <div className="mt-2 flex justify-end gap-2">
-                    <GlassButton variant="ghost" onClick={() => setModalOpen(false)}>
-                      {t.common.cancel}
-                    </GlassButton>
-                    <GlassButton type="submit" disabled={saveMutation.isPending}>
-                      {editingTx ? t.common.save : t.common.create}
-                    </GlassButton>
-                  </div>
-                </form>
-              </GlassCard>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          {formError && <p className="text-xs text-rose-500">{formError}</p>}
+        </form>
+      </GlassModal>
     </div>
   );
 }

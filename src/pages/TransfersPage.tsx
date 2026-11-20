@@ -14,6 +14,11 @@ import {
 import { GlassBadge } from '@/components/glass/GlassBadge';
 import { GlassButton } from '@/components/glass/GlassButton';
 import { GlassCard } from '@/components/glass/GlassCard';
+import {
+  GlassDateTimeInput,
+  getNowLocalDateTimeValue,
+  localDateTimeValueToIso,
+} from '@/components/glass/GlassDateTimeInput';
 import { GlassSelect } from '@/components/glass/GlassSelect';
 import { useAuth } from '@/contexts/AuthContext';
 import { useI18n } from '@/i18n/I18nContext';
@@ -36,6 +41,7 @@ const TransferFormSchema = z
     fromAmount: z.string().regex(/^\d+(\.\d{1,4})?$/),
     exchangeRate: z.string().optional(),
     feeAmount: z.string().regex(/^\d+(\.\d{1,4})?$/).default('0'),
+    occurredAtLocal: z.string().min(10),
     notes: z.string().max(500).optional(),
   })
   .refine((v) => v.fromAccountId !== v.toAccountId, {
@@ -97,6 +103,7 @@ export function TransfersPage() {
       fromAmount: '',
       exchangeRate: '',
       feeAmount: '0',
+      occurredAtLocal: getNowLocalDateTimeValue(),
       notes: '',
     },
   });
@@ -136,6 +143,7 @@ export function TransfersPage() {
           fromAmount: vals.fromAmount,
           exchangeRate: isCrossCurrency && vals.exchangeRate ? vals.exchangeRate : undefined,
           feeAmount: vals.feeAmount || '0',
+          occurredAt: localDateTimeValueToIso(vals.occurredAtLocal),
           notes: vals.notes || undefined,
         },
         idempotencyKey,
@@ -150,6 +158,7 @@ export function TransfersPage() {
         fromAmount: '',
         exchangeRate: '',
         feeAmount: '0',
+        occurredAtLocal: getNowLocalDateTimeValue(),
         notes: '',
       });
     },
@@ -278,11 +287,21 @@ export function TransfersPage() {
                 <input
                   {...transferForm.register('exchangeRate')}
                   inputMode="decimal"
-                  placeholder="Auto (cached rate)"
-                  className="w-full rounded-xl border border-slate-300/50 bg-white/70 px-3 py-2 font-mono text-sm text-slate-900 outline-none dark:border-white/15 dark:bg-slate-900/60 dark:text-white"
+                  placeholder={t.transfers.exchangeRate}
+                  className="liquid-glass-input px-3 py-2 font-mono text-sm"
                 />
               </div>
             )}
+
+            <div className="sm:col-span-2">
+              <GlassDateTimeInput
+                label={t.transactions.dateLabel}
+                value={transferForm.watch('occurredAtLocal')}
+                onChange={(val) =>
+                  transferForm.setValue('occurredAtLocal', val, { shouldValidate: true })
+                }
+              />
+            </div>
 
             <div className="sm:col-span-2">
               <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-slate-300">

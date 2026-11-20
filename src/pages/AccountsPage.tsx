@@ -21,6 +21,7 @@ import {
 import { GlassBadge } from '@/components/glass/GlassBadge';
 import { GlassButton } from '@/components/glass/GlassButton';
 import { GlassCard } from '@/components/glass/GlassCard';
+import { GlassModal } from '@/components/glass/GlassModal';
 import { GlassSelect } from '@/components/glass/GlassSelect';
 import { useAuth } from '@/contexts/AuthContext';
 import { useI18n } from '@/i18n/I18nContext';
@@ -421,39 +422,27 @@ export function AccountsPage() {
         </GlassCard>
       )}
 
-      {/* Create / Edit Account Modal */}
-      <AnimatePresence>
-        {modalOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-sm"
-          >
-            <motion.div
-              initial={{ scale: 0.96, y: 12 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.96, y: 12 }}
-              className="w-full max-w-md"
-            >
-              <GlassCard padding="lg">
-                <div className="mb-4 flex items-center justify-between">
-                  <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-                    {editingAccount ? t.accounts.editAccount : t.accounts.addAccount}
-                  </h2>
-                  <button
-                    type="button"
-                    onClick={() => setModalOpen(false)}
-                    className="rounded-xl p-1 text-slate-400 hover:text-slate-200"
-                  >
-                    <X className="h-5 w-5" />
-                  </button>
-                </div>
-
-                <form
-                  onSubmit={form.handleSubmit((vals) => saveMutation.mutate(vals))}
-                  className="flex flex-col gap-3.5"
-                >
+      {/* Create / Edit Account Modal (Portal with sticky action footer) */}
+      <GlassModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title={editingAccount ? t.accounts.editAccount : t.accounts.addAccount}
+        footer={
+          <div className="flex items-center justify-end gap-2">
+            <GlassButton variant="ghost" onClick={() => setModalOpen(false)}>
+              {t.common.cancel}
+            </GlassButton>
+            <GlassButton type="submit" form="account-editor-form" disabled={saveMutation.isPending}>
+              {editingAccount ? t.common.save : t.common.create}
+            </GlassButton>
+          </div>
+        }
+      >
+        <form
+          id="account-editor-form"
+          onSubmit={form.handleSubmit((vals) => saveMutation.mutate(vals))}
+          className="flex flex-col gap-3"
+        >
                   <div>
                     <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-slate-300">
                       {t.accounts.nameLabel}
@@ -538,22 +527,9 @@ export function AccountsPage() {
                     {t.accounts.includeInNetWorth}
                   </label>
 
-                  {formError && <p className="text-xs text-rose-500">{formError}</p>}
-
-                  <div className="mt-2 flex justify-end gap-2">
-                    <GlassButton variant="ghost" onClick={() => setModalOpen(false)}>
-                      {t.common.cancel}
-                    </GlassButton>
-                    <GlassButton type="submit" disabled={saveMutation.isPending}>
-                      {editingAccount ? t.common.save : t.common.create}
-                    </GlassButton>
-                  </div>
-                </form>
-              </GlassCard>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          {formError && <p className="text-xs text-rose-500">{formError}</p>}
+        </form>
+      </GlassModal>
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { apiRequest, downloadApiFile } from '@/lib/apiClient';
+import { isInsideTelegramMiniApp } from '@/lib/telegram';
 import type {
   AnalyticsPeriod,
   AnalyticsResponse,
@@ -256,12 +257,19 @@ export async function downloadReportExport(
     from?: string;
     to?: string;
   },
-): Promise<void> {
+): Promise<'telegram' | 'download'> {
   const url = buildReportExportUrl(params);
+  if (isInsideTelegramMiniApp()) {
+    await apiRequest<{ delivered: 'telegram'; fileName: string }>(`${url}&delivery=telegram`, {
+      workspaceId,
+    });
+    return 'telegram';
+  }
   await downloadApiFile(url, {
     workspaceId,
     fallbackFileName: `finora-${params.reportType}-${params.period}.${params.format}`,
   });
+  return 'download';
 }
 
 export async function createFamilyWorkspace(payload: { name: string; defaultCurrency: string }) {

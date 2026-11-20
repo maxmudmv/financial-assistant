@@ -32,7 +32,7 @@ export function AnalyticsPage() {
   const { language, t } = useI18n();
   const workspaceId = activeWorkspace?.id ?? '';
 
-  const [period, setPeriod] = useState<AnalyticsPeriod>('month');
+  const [period, setPeriod] = useState<AnalyticsPeriod>('today');
   const [customFrom, setCustomFrom] = useState('');
   const [customTo, setCustomTo] = useState('');
 
@@ -51,23 +51,25 @@ export function AnalyticsPage() {
 
   return (
     <div className="flex flex-col gap-5 pb-24">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+          <h1 className="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-2xl">
             {t.analytics.title}
           </h1>
-          <p className="text-sm text-slate-600 dark:text-slate-300">{t.analytics.subtitle}</p>
+          <p className="text-xs text-slate-600 dark:text-zinc-400 sm:text-sm">
+            {t.analytics.subtitle}
+          </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="liquid-glass-pill inline-flex flex-wrap gap-1 rounded-2xl p-1">
+        <div className="flex flex-col gap-2 sm:items-end">
+          <div className="liquid-glass-pill no-scrollbar flex w-full flex-nowrap items-center gap-1 overflow-x-auto rounded-full p-1 sm:w-fit">
             {PERIODS.map((p) => (
               <button
                 key={p}
                 type="button"
                 onClick={() => setPeriod(p)}
                 className={cn(
-                  'rounded-xl px-2.5 py-1 text-xs font-semibold transition',
+                  'shrink-0 whitespace-nowrap rounded-full px-2.5 py-1 text-[11px] font-semibold transition',
                   period === p
                     ? 'liquid-glass-lens text-white dark:text-slate-950'
                     : 'text-slate-600 hover:text-slate-900 dark:text-zinc-300 dark:hover:text-white',

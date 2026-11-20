@@ -141,6 +141,9 @@ export interface TranslationDictionary {
     typeLabel: string;
     amountLabel: string;
     dateLabel: string;
+    yesterdayLabel: string;
+    twoDaysAgoLabel: string;
+    noAccountsHint: string;
     descriptionLabel: string;
     notesLabel: string;
     tagsLabel: string;
@@ -330,6 +333,7 @@ export interface TranslationDictionary {
     exportPdf: string;
     exportXlsx: string;
     exportCsv: string;
+    sentToTelegram: string;
     periodCol: string;
     txCountCol: string;
     incomeCol: string;

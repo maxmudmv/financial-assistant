@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import Decimal from 'decimal.js';
+import { getServerEnv } from '../../server/config/env.js';
 import { sendJson, withApiHandler } from '../../server/http/response.js';
 import { BadRequestError } from '../../server/security/errors.js';
 import {
@@ -230,7 +231,11 @@ export default withApiHandler(async (req: VercelRequest, res: VercelResponse) =>
         (lang === 'en' && cat.name_en) ||
         (lang === 'uz' && cat.name_uz) ||
         cat.name
-      : 'Other';
+      : lang === 'ru'
+        ? 'Другое'
+        : lang === 'en'
+          ? 'Other'
+          : 'Boshqa';
     return {
       id: String(row.id),
       accountId: String(row.account_id),
@@ -458,38 +463,56 @@ export default withApiHandler(async (req: VercelRequest, res: VercelResponse) =>
       rows,
     };
 
+    const fileName = `finora-${reportType}-${period}.${format}`;
+    let fileBuf: Buffer;
+    let mimeType: string;
+
     if (format === 'pdf') {
-      const pdfBuf = generatePdfReport(tabularPayload);
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader(
-        'Content-Disposition',
-        `attachment; filename="finora-${reportType}-${period}.pdf"`,
+      fileBuf = generatePdfReport(tabularPayload);
+      mimeType = 'application/pdf';
+    } else if (format === 'xlsx') {
+      fileBuf = generateXlsxReport(tabularPayload);
+      mimeType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+    } else {
+      fileBuf = generateCsvReport(tabularPayload);
+      mimeType = 'text/csv; charset=utf-8';
+    }
+
+    // Telegram Mini App WebViews block <a download href="blob:...">, so deliver directly to Telegram chat via Bot API
+    if (req.query.delivery === 'telegram') {
+      const env = getServerEnv();
+      const formData = new FormData();
+      formData.append('chat_id', String(ctx.session.user.telegramId));
+      formData.append(
+        'caption',
+        `FINORA — ${ctx.workspace.name} (${range.from.toISOString().slice(0, 10)} — ${range.to.toISOString().slice(0, 10)})`,
       );
-      res.status(200).send(pdfBuf);
+      formData.append(
+        'document',
+        new Blob([new Uint8Array(fileBuf)], { type: mimeType }),
+        fileName,
+      );
+
+      const tgResponse = await fetch(
+        `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendDocument`,
+        {
+          method: 'POST',
+          body: formData,
+        },
+      );
+
+      if (!tgResponse.ok) {
+        const tgErrText = await tgResponse.text().catch(() => '');
+        throw new Error(`Telegram document delivery failed (${tgResponse.status}): ${tgErrText.slice(0, 120)}`);
+      }
+
+      sendJson(res, 200, { delivered: 'telegram', fileName });
       return;
     }
 
-    if (format === 'xlsx') {
-      const xlsxBuf = generateXlsxReport(tabularPayload);
-      res.setHeader(
-        'Content-Type',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      );
-      res.setHeader(
-        'Content-Disposition',
-        `attachment; filename="finora-${reportType}-${period}.xlsx"`,
-      );
-      res.status(200).send(xlsxBuf);
-      return;
-    }
-
-    const csvBuf = generateCsvReport(tabularPayload);
-    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-    res.setHeader(
-      'Content-Disposition',
-      `attachment; filename="finora-${reportType}-${period}.csv"`,
-    );
-    res.status(200).send(csvBuf);
+    res.setHeader('Content-Type', mimeType);
+    res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+    res.status(200).send(fileBuf);
     return;
   }
 

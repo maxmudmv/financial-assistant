@@ -9,6 +9,7 @@ import {
   LayoutDashboard,
   LayoutGrid,
   ListOrdered,
+  Plus,
   Settings,
   ShieldCheck,
   Target,
@@ -121,13 +122,13 @@ export function AppLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="finora-canvas flex min-h-[100dvh] flex-col">
-      {/* Subtle restrained ambient depth orbs */}
+      {/* Subtle gleaming ambient depth orbs */}
       <div className="finora-ambient-orbs" aria-hidden="true">
         <span className="finora-orb finora-orb-1" />
         <span className="finora-orb finora-orb-2" />
       </div>
 
-      {/* Compact Single-Row Liquid Glass Top Header */}
+      {/* Compact Single-Row Liquid Glass Top Header — Core Actions Only */}
       <header className="sticky top-0 z-30 mx-auto w-full max-w-6xl px-3 pt-2.5 sm:px-4 sm:pt-3.5">
         <div className="liquid-glass-pill flex items-center justify-between gap-2 rounded-full px-2.5 py-1.5 sm:px-3.5 sm:py-2">
           <div className="flex min-w-0 items-center gap-2">
@@ -150,14 +151,18 @@ export function AppLayout({ children }: { children: ReactNode }) {
                   {t.app.name}
                 </span>
                 {activeWorkspace && (
-                  <span className="hidden truncate rounded-full bg-slate-900/10 px-2 py-0.5 text-[10px] font-semibold text-slate-700 dark:bg-white/10 dark:text-zinc-200 md:inline">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      triggerHaptic('selection');
+                      navigate('/settings');
+                    }}
+                    className="max-w-[130px] truncate rounded-full border border-slate-900/10 bg-slate-900/[0.06] px-2 py-0.5 text-[10px] font-semibold text-slate-700 dark:border-white/15 dark:bg-white/10 dark:text-zinc-200"
+                  >
                     {activeWorkspace.name}
-                  </span>
+                  </button>
                 )}
               </div>
-              <p className="hidden text-[11px] text-slate-500 dark:text-zinc-400 xl:block">
-                {t.app.tagline}
-              </p>
             </div>
           </div>
 
@@ -194,10 +199,60 @@ export function AppLayout({ children }: { children: ReactNode }) {
             </nav>
           )}
 
-          <div className="flex shrink-0 items-center gap-1 sm:gap-1.5">
-            <LanguageSwitcher />
-            <ThemeToggle />
-          </div>
+          {status === 'authenticated' ? (
+            <div className="flex shrink-0 items-center gap-1.5">
+              <motion.button
+                type="button"
+                whileTap={{ scaleX: 1.07, scaleY: 0.89 }}
+                transition={LIQUID_TAP_SPRING}
+                onClick={() => {
+                  triggerHaptic('light');
+                  navigate('/accounts');
+                }}
+                aria-label={t.nav.accounts}
+                title={t.nav.accounts}
+                className="liquid-glass-pill flex h-8 w-8 items-center justify-center rounded-full text-slate-700 dark:text-zinc-200"
+              >
+                <Wallet className="h-3.5 w-3.5" />
+              </motion.button>
+
+              <motion.button
+                type="button"
+                whileTap={{ scaleX: 1.07, scaleY: 0.89 }}
+                transition={LIQUID_TAP_SPRING}
+                onClick={() => {
+                  triggerHaptic('light');
+                  navigate('/settings');
+                }}
+                aria-label={t.nav.settings}
+                title={t.nav.settings}
+                className="liquid-glass-pill flex h-8 w-8 items-center justify-center rounded-full text-slate-700 dark:text-zinc-200"
+              >
+                <Settings className="h-3.5 w-3.5" />
+              </motion.button>
+
+              <motion.button
+                type="button"
+                whileTap={{ scaleX: 1.08, scaleY: 0.88 }}
+                transition={LIQUID_TAP_SPRING}
+                onClick={() => {
+                  triggerHaptic('medium');
+                  navigate('/transactions?new=1');
+                }}
+                aria-label={t.transactions.addTransaction}
+                title={t.transactions.addTransaction}
+                className="liquid-glass-btn-primary inline-flex h-8 items-center gap-1 rounded-full px-3 text-xs font-bold"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">{t.common.create}</span>
+              </motion.button>
+            </div>
+          ) : (
+            <div className="flex shrink-0 items-center gap-1 sm:gap-1.5">
+              <LanguageSwitcher />
+              <ThemeToggle />
+            </div>
+          )}
         </div>
       </header>
 
@@ -229,7 +284,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
               className="fixed inset-x-3 bottom-[5.25rem] z-40 mx-auto max-w-md lg:hidden"
             >
               <div className="liquid-glass-dock rounded-[26px] p-3">
-                <div className="mx-auto mb-2 h-1 w-9 rounded-full bg-slate-400/45 dark:bg-white/20" />
+                <div className="mx-auto mb-2 h-1 w-9 rounded-full bg-slate-400/45 dark:bg-white/25" />
                 <div className="mb-2.5 flex items-center justify-between px-1.5">
                   <div className="flex min-w-0 items-center gap-2">
                     <span className="text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-zinc-300">

@@ -199,7 +199,11 @@ export default withApiHandler(async (req: VercelRequest, res: VercelResponse) =>
         (lang === 'en' && cat.name_en) ||
         (lang === 'uz' && cat.name_uz) ||
         cat.name
-      : 'Other';
+      : lang === 'ru'
+        ? 'Другое'
+        : lang === 'en'
+          ? 'Other'
+          : 'Boshqa';
 
     return {
       id: String(row.id),
